@@ -1,1 +1,2 @@
+*.h5 filter=lfs diff=lfs merge=lfs -text
 feature_cache.h5 filter=lfs diff=lfs merge=lfs -text
