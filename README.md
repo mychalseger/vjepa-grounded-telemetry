@@ -122,7 +122,7 @@ python main.py
 2. **Baseline Model Training (`baseline_model.py`):**  
    Trains an ungrounded 2-layer Sequence-to-Sequence LSTM for 200 epochs using Mean Squared Error loss.
 3. **Grounded Model Training (`optimized_model.py`):**  
-   Trains the dual-tower student model for 120 epochs using the joint multi-task loss $\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{MSE}} + 0.25 \cdot \mathcal{L}_{\text{InfoNCE}}$, with Scheduled Manifold Sampling decay ($\lambda_{\text{blend}} \to 0.500$) and trajectory jitter ($\sigma = 0.02$).
+   Trains the dual-tower student model for 120 epochs using the joint multi-task loss `L_total = L_MSE + 0.25 * L_InfoNCE`, with Scheduled Manifold Sampling decay (`λ_blend → 0.500`) and stochastic trajectory jitter (`σ = 0.02`).
 4. **Closed-Loop MuJoCo Evaluation (`main.py`):**  
    Evaluates both models under strict **Visual Silence** across 21 held-out test episodes (Episodes 185 to 205), generating comparison plots and animations in `results/`.
 
