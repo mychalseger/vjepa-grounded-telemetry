@@ -15,7 +15,7 @@ The framework eliminates **autoregressive drift** in closed-loop robotic state f
 
 - **73.80% Spatial Drift Reduction:** Average L2 trajectory tracking error reduced from **147.55** (Baseline LSTM) to **38.66** across 21 held-out test episodes in closed-loop MuJoCo physics ($p < 10^{-6}$).
 - **Peak Precision on Non-Linear Inflections:** Up to **87.27% error reduction** on sharp directional shifts (Episode 203).
-- **Extreme Edge Efficiency:** Total deployed inference network comprises **2,455,810 trainable parameters** requiring only **9.82 MB of FP32 RAM** ($<$5 MB in FP16, $<$2.5 MB in INT8).
+- **Extreme Edge Efficiency:** Total deployed inference network comprises **2,455,810 trainable parameters** requiring only **9.82 MB of FP32 RAM** (<5 MB in FP16, <2.5 MB in INT8).
 - **$124\times$ Parameter Compression:** $124\times$ smaller than the visual teacher model (V-JEPA ViT-L/16, ~304M parameters).
 - **Runtime Visual Silence:** Complete immunity to visual occlusions, lighting shifts, lens smudges, and network latency at inference time.
 
