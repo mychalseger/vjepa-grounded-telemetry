@@ -5,6 +5,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Paper](https://img.shields.io/badge/Paper-PDF-red.svg)](paper/VJEPA_Grounded_Spatial_Representation_Journal.pdf)
 
+**Permanent Zenodo Archive**  
+[![DOI](https://zenodo.org/badge/1346643957.svg)](https://doi.org/10.5281/zenodo.22102894)
+
+All data, code, and paper are preserved forever with DOI 10.5281/zenodo.22102894
+
 This repository contains the complete PyTorch implementation, experimental pipeline, training logs, evaluation suite, and full academic publication for **V-JEPA Grounded Spatial Representations**. 
 
 The framework eliminates **autoregressive drift** in closed-loop robotic state forecasting by regularizing a lightweight, 2.46-million parameter student network against Meta's pre-trained **V-JEPA (Video Joint Embedding Predictive Architecture)** world model during offline training. At runtime, the model operates in complete **Visual Silence** (zero camera feeds and zero vision transformers at inference), achieving a **73.80% average reduction in trajectory drift** in closed-loop MuJoCo physics simulation.
