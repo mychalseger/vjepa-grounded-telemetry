@@ -1,0 +1,16 @@
+# Core Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.30.0
+
+# Robot Datasets & Physics Simulation
+lerobot>=0.1.0
+mujoco>=3.0.0
+
+# Data Processing, Cache & Utilities
+numpy>=1.24.0
+h5py>=3.8.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
+pandas>=2.0.0
+huggingface_hub>=0.16.0

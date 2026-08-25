@@ -1,0 +1,24 @@
+{
+  "title": "Grounding Spatial Representations via Visual World Models for Robust Autoregressive Drift Reduction in Low-Power Robot Telemetry: Code and Data Artifacts",
+  "description": "Complete research software and data artifacts for the V-JEPA Grounded Spatial Representation framework. Eliminates autoregressive drift in closed-loop robotic action forecasting by regularizing lightweight (2.46M parameter) student sequence models against pre-trained V-JEPA visual world model latent manifolds during training. Evaluated in complete Visual Silence across 21 held-out test episodes in closed-loop MuJoCo physics simulation, achieving a 73.80% reduction in spatial trajectory drift.",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Seger, Mychal"
+    }
+  ],
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": [
+    "Robot Telemetry Forecasting",
+    "Autoregressive Drift",
+    "Visual World Models",
+    "V-JEPA",
+    "Contrastive Learning",
+    "InfoNCE",
+    "Edge Robotics",
+    "Closed-Loop Control",
+    "MuJoCo",
+    "LeRobot"
+  ]
+}

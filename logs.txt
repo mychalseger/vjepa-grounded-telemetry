@@ -1,0 +1,466 @@
+C:\Users\mycha\Documents\vrojepa195>python main.py
+C:\Users\mycha\AppData\Roaming\Python\Python314\site-packages\triton\windows_utils.py:404: UserWarning: Failed to find CUDA.
+  warnings.warn("Failed to find CUDA.")
+
+--- Running Experiment: lambda=0.25, blend=0.4, schedule_epoch=30, lr=0.001, epochs=120, jitter=True ---
+Found existing feature cache at feature_cache.h5. Skipping extraction.
+Split Summary: Total Episodes = 206 | Training = 164 | Validation = 21 | Testing = 21
+Train Episode IDs: [  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
+  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35
+  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53
+  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
+  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89
+  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106 107
+ 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125
+ 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143
+ 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161
+ 162 163]
+Val Episode IDs: [164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181
+ 182 183 184]
+Test Episode IDs: [185 186 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202
+ 203 204 205]
+Dataset compiled. Total frames: 25650, Valid sequential windows: 12843
+Dataset compiled. Total frames: 25650, Valid sequential windows: 1925
+Starting training of Baseline LSTM Forecaster...
+Epoch 1/200 | LR: 1.00e-03 | Training MSE Loss: 73604.542541 | Val MSE Loss: 77061.426189
+Epoch 2/200 | LR: 1.00e-03 | Training MSE Loss: 70438.351749 | Val MSE Loss: 74281.580394
+Epoch 3/200 | LR: 1.00e-03 | Training MSE Loss: 68146.614152 | Val MSE Loss: 72224.968003
+Epoch 4/200 | LR: 9.99e-04 | Training MSE Loss: 66220.906730 | Val MSE Loss: 70314.028417
+Epoch 5/200 | LR: 9.99e-04 | Training MSE Loss: 64417.681510 | Val MSE Loss: 68507.173462
+Epoch 6/200 | LR: 9.98e-04 | Training MSE Loss: 62704.252476 | Val MSE Loss: 66784.731891
+Epoch 7/200 | LR: 9.98e-04 | Training MSE Loss: 61064.668378 | Val MSE Loss: 65126.054249
+Epoch 8/200 | LR: 9.97e-04 | Training MSE Loss: 59483.438064 | Val MSE Loss: 63523.408839
+Epoch 9/200 | LR: 9.96e-04 | Training MSE Loss: 57955.458141 | Val MSE Loss: 61972.136627
+Epoch 10/200 | LR: 9.95e-04 | Training MSE Loss: 56479.360780 | Val MSE Loss: 60473.079541
+Epoch 11/200 | LR: 9.94e-04 | Training MSE Loss: 55049.476971 | Val MSE Loss: 59016.235690
+Epoch 12/200 | LR: 9.93e-04 | Training MSE Loss: 53659.172505 | Val MSE Loss: 57602.065668
+Epoch 13/200 | LR: 9.91e-04 | Training MSE Loss: 52311.607779 | Val MSE Loss: 56225.182518
+Epoch 14/200 | LR: 9.90e-04 | Training MSE Loss: 50997.943249 | Val MSE Loss: 54881.336672
+Epoch 15/200 | LR: 9.88e-04 | Training MSE Loss: 49722.216045 | Val MSE Loss: 53580.942074
+Epoch 16/200 | LR: 9.86e-04 | Training MSE Loss: 48484.468661 | Val MSE Loss: 52317.057585
+Epoch 17/200 | LR: 9.84e-04 | Training MSE Loss: 47281.553206 | Val MSE Loss: 51086.609237
+Epoch 18/200 | LR: 9.82e-04 | Training MSE Loss: 46111.817956 | Val MSE Loss: 49888.258683
+Epoch 19/200 | LR: 9.80e-04 | Training MSE Loss: 44973.104276 | Val MSE Loss: 48722.059781
+Epoch 20/200 | LR: 9.78e-04 | Training MSE Loss: 43866.598103 | Val MSE Loss: 47585.148007
+Epoch 21/200 | LR: 9.76e-04 | Training MSE Loss: 42787.850181 | Val MSE Loss: 46480.789730
+Epoch 22/200 | LR: 9.73e-04 | Training MSE Loss: 41739.969509 | Val MSE Loss: 45405.389789
+Epoch 23/200 | LR: 9.71e-04 | Training MSE Loss: 40721.393302 | Val MSE Loss: 44357.246644
+Epoch 24/200 | LR: 9.68e-04 | Training MSE Loss: 39729.193849 | Val MSE Loss: 43338.045124
+Epoch 25/200 | LR: 9.65e-04 | Training MSE Loss: 38764.019861 | Val MSE Loss: 42347.721319
+Epoch 26/200 | LR: 9.62e-04 | Training MSE Loss: 37828.785591 | Val MSE Loss: 41381.168281
+Epoch 27/200 | LR: 9.59e-04 | Training MSE Loss: 36915.970048 | Val MSE Loss: 40442.772119
+Epoch 28/200 | LR: 9.56e-04 | Training MSE Loss: 36030.321306 | Val MSE Loss: 39528.815353
+Epoch 29/200 | LR: 9.53e-04 | Training MSE Loss: 35168.976141 | Val MSE Loss: 38640.048547
+Epoch 30/200 | LR: 9.50e-04 | Training MSE Loss: 34331.754032 | Val MSE Loss: 37776.104282
+Epoch 31/200 | LR: 9.46e-04 | Training MSE Loss: 33518.371216 | Val MSE Loss: 36935.902179
+Epoch 32/200 | LR: 9.42e-04 | Training MSE Loss: 32728.736586 | Val MSE Loss: 36118.601735
+Epoch 33/200 | LR: 9.39e-04 | Training MSE Loss: 31960.813428 | Val MSE Loss: 35324.800929
+Epoch 34/200 | LR: 9.35e-04 | Training MSE Loss: 31216.223452 | Val MSE Loss: 34552.903691
+Epoch 35/200 | LR: 9.31e-04 | Training MSE Loss: 30492.605262 | Val MSE Loss: 33802.492841
+Epoch 36/200 | LR: 9.27e-04 | Training MSE Loss: 29790.737460 | Val MSE Loss: 33072.730288
+Epoch 37/200 | LR: 9.23e-04 | Training MSE Loss: 29107.374554 | Val MSE Loss: 32365.844515
+Epoch 38/200 | LR: 9.19e-04 | Training MSE Loss: 28446.662061 | Val MSE Loss: 31677.805643
+Epoch 39/200 | LR: 9.14e-04 | Training MSE Loss: 27804.879021 | Val MSE Loss: 31009.060465
+Epoch 40/200 | LR: 9.10e-04 | Training MSE Loss: 27181.449932 | Val MSE Loss: 30361.561552
+Epoch 41/200 | LR: 9.05e-04 | Training MSE Loss: 26577.982798 | Val MSE Loss: 29731.845741
+Epoch 42/200 | LR: 9.01e-04 | Training MSE Loss: 25991.274008 | Val MSE Loss: 29121.030554
+Epoch 43/200 | LR: 8.96e-04 | Training MSE Loss: 25423.783987 | Val MSE Loss: 28526.995829
+Epoch 44/200 | LR: 8.91e-04 | Training MSE Loss: 24872.343176 | Val MSE Loss: 27950.954989
+Epoch 45/200 | LR: 8.86e-04 | Training MSE Loss: 24338.344329 | Val MSE Loss: 27391.716191
+Epoch 46/200 | LR: 8.81e-04 | Training MSE Loss: 23820.048460 | Val MSE Loss: 26849.297014
+Epoch 47/200 | LR: 8.76e-04 | Training MSE Loss: 23318.172963 | Val MSE Loss: 26322.730788
+Epoch 48/200 | LR: 8.71e-04 | Training MSE Loss: 22831.956547 | Val MSE Loss: 25811.529685
+Epoch 49/200 | LR: 8.66e-04 | Training MSE Loss: 22360.604247 | Val MSE Loss: 25315.883626
+Epoch 50/200 | LR: 8.60e-04 | Training MSE Loss: 21903.781434 | Val MSE Loss: 24836.063328
+Epoch 51/200 | LR: 8.55e-04 | Training MSE Loss: 21461.988456 | Val MSE Loss: 24370.039187
+Epoch 52/200 | LR: 8.49e-04 | Training MSE Loss: 21033.912719 | Val MSE Loss: 23918.186236
+Epoch 53/200 | LR: 8.44e-04 | Training MSE Loss: 20619.651597 | Val MSE Loss: 23480.285671
+Epoch 54/200 | LR: 8.38e-04 | Training MSE Loss: 20218.333533 | Val MSE Loss: 23055.973587
+Epoch 55/200 | LR: 8.32e-04 | Training MSE Loss: 19829.969318 | Val MSE Loss: 22644.661412
+Epoch 56/200 | LR: 8.26e-04 | Training MSE Loss: 19453.806203 | Val MSE Loss: 22246.422765
+Epoch 57/200 | LR: 8.21e-04 | Training MSE Loss: 19090.294928 | Val MSE Loss: 21860.155411
+Epoch 58/200 | LR: 8.14e-04 | Training MSE Loss: 18738.166947 | Val MSE Loss: 21485.263376
+Epoch 59/200 | LR: 8.08e-04 | Training MSE Loss: 18397.009032 | Val MSE Loss: 21122.578132
+Epoch 60/200 | LR: 8.02e-04 | Training MSE Loss: 18067.893488 | Val MSE Loss: 20770.558300
+Epoch 61/200 | LR: 7.96e-04 | Training MSE Loss: 17748.206006 | Val MSE Loss: 20430.417523
+Epoch 62/200 | LR: 7.90e-04 | Training MSE Loss: 17440.382925 | Val MSE Loss: 20099.515959
+Epoch 63/200 | LR: 7.83e-04 | Training MSE Loss: 17141.129253 | Val MSE Loss: 19780.274352
+Epoch 64/200 | LR: 7.77e-04 | Training MSE Loss: 16852.788672 | Val MSE Loss: 19471.205309
+Epoch 65/200 | LR: 7.70e-04 | Training MSE Loss: 16574.146546 | Val MSE Loss: 19171.640311
+Epoch 66/200 | LR: 7.64e-04 | Training MSE Loss: 16304.445917 | Val MSE Loss: 18880.953247
+Epoch 67/200 | LR: 7.57e-04 | Training MSE Loss: 16043.343855 | Val MSE Loss: 18599.530207
+Epoch 68/200 | LR: 7.50e-04 | Training MSE Loss: 15791.105053 | Val MSE Loss: 18326.949311
+Epoch 69/200 | LR: 7.43e-04 | Training MSE Loss: 15546.916431 | Val MSE Loss: 18063.458316
+Epoch 70/200 | LR: 7.37e-04 | Training MSE Loss: 15311.497290 | Val MSE Loss: 17807.684520
+Epoch 71/200 | LR: 7.30e-04 | Training MSE Loss: 15083.651955 | Val MSE Loss: 17560.405624
+Epoch 72/200 | LR: 7.23e-04 | Training MSE Loss: 14863.170556 | Val MSE Loss: 17320.962357
+Epoch 73/200 | LR: 7.16e-04 | Training MSE Loss: 14650.033959 | Val MSE Loss: 17089.446631
+Epoch 74/200 | LR: 7.09e-04 | Training MSE Loss: 14444.738525 | Val MSE Loss: 16864.650755
+Epoch 75/200 | LR: 7.02e-04 | Training MSE Loss: 14245.571909 | Val MSE Loss: 16647.591074
+Epoch 76/200 | LR: 6.94e-04 | Training MSE Loss: 14053.502230 | Val MSE Loss: 16437.175350
+Epoch 77/200 | LR: 6.87e-04 | Training MSE Loss: 13867.508238 | Val MSE Loss: 16233.699475
+Epoch 78/200 | LR: 6.80e-04 | Training MSE Loss: 13688.271931 | Val MSE Loss: 16036.572748
+Epoch 79/200 | LR: 6.73e-04 | Training MSE Loss: 13515.110483 | Val MSE Loss: 15845.754552
+Epoch 80/200 | LR: 6.65e-04 | Training MSE Loss: 13347.923575 | Val MSE Loss: 15660.762860
+Epoch 81/200 | LR: 6.58e-04 | Training MSE Loss: 13185.767666 | Val MSE Loss: 15482.046147
+Epoch 82/200 | LR: 6.51e-04 | Training MSE Loss: 13029.348930 | Val MSE Loss: 15309.417464
+Epoch 83/200 | LR: 6.43e-04 | Training MSE Loss: 12878.689557 | Val MSE Loss: 15141.489404
+Epoch 84/200 | LR: 6.36e-04 | Training MSE Loss: 12732.651398 | Val MSE Loss: 14979.494489
+Epoch 85/200 | LR: 6.28e-04 | Training MSE Loss: 12591.914000 | Val MSE Loss: 14822.411083
+Epoch 86/200 | LR: 6.21e-04 | Training MSE Loss: 12455.993915 | Val MSE Loss: 14670.286306
+Epoch 87/200 | LR: 6.13e-04 | Training MSE Loss: 12324.190852 | Val MSE Loss: 14523.406091
+Epoch 88/200 | LR: 6.05e-04 | Training MSE Loss: 12197.641857 | Val MSE Loss: 14381.142435
+Epoch 89/200 | LR: 5.98e-04 | Training MSE Loss: 12074.996601 | Val MSE Loss: 14243.490163
+Epoch 90/200 | LR: 5.90e-04 | Training MSE Loss: 11956.505676 | Val MSE Loss: 14110.114190
+Epoch 91/200 | LR: 5.82e-04 | Training MSE Loss: 11841.809299 | Val MSE Loss: 13981.476102
+Epoch 92/200 | LR: 5.75e-04 | Training MSE Loss: 11731.779039 | Val MSE Loss: 13856.359828
+Epoch 93/200 | LR: 5.67e-04 | Training MSE Loss: 11624.976178 | Val MSE Loss: 13735.305086
+Epoch 94/200 | LR: 5.59e-04 | Training MSE Loss: 11522.001711 | Val MSE Loss: 13618.109367
+Epoch 95/200 | LR: 5.52e-04 | Training MSE Loss: 11422.502546 | Val MSE Loss: 13504.483293
+Epoch 96/200 | LR: 5.44e-04 | Training MSE Loss: 11325.656776 | Val MSE Loss: 13395.557714
+Epoch 97/200 | LR: 5.36e-04 | Training MSE Loss: 11233.687615 | Val MSE Loss: 13288.523706
+Epoch 98/200 | LR: 5.28e-04 | Training MSE Loss: 11143.281244 | Val MSE Loss: 13185.977713
+Epoch 99/200 | LR: 5.21e-04 | Training MSE Loss: 11056.761639 | Val MSE Loss: 13086.420147
+Epoch 100/200 | LR: 5.13e-04 | Training MSE Loss: 10972.744232 | Val MSE Loss: 12990.460005
+Epoch 101/200 | LR: 5.05e-04 | Training MSE Loss: 10891.896831 | Val MSE Loss: 12897.085027
+Epoch 102/200 | LR: 4.97e-04 | Training MSE Loss: 10813.709144 | Val MSE Loss: 12806.678284
+Epoch 103/200 | LR: 4.89e-04 | Training MSE Loss: 10738.299302 | Val MSE Loss: 12719.049180
+Epoch 104/200 | LR: 4.82e-04 | Training MSE Loss: 10665.399886 | Val MSE Loss: 12634.546092
+Epoch 105/200 | LR: 4.74e-04 | Training MSE Loss: 10595.000121 | Val MSE Loss: 12552.886485
+Epoch 106/200 | LR: 4.66e-04 | Training MSE Loss: 10527.323945 | Val MSE Loss: 12473.363395
+Epoch 107/200 | LR: 4.58e-04 | Training MSE Loss: 10461.426079 | Val MSE Loss: 12396.577076
+Epoch 108/200 | LR: 4.51e-04 | Training MSE Loss: 10397.900693 | Val MSE Loss: 12322.536866
+Epoch 109/200 | LR: 4.43e-04 | Training MSE Loss: 10336.755923 | Val MSE Loss: 12250.403919
+Epoch 110/200 | LR: 4.35e-04 | Training MSE Loss: 10277.434039 | Val MSE Loss: 12180.711590
+Epoch 111/200 | LR: 4.28e-04 | Training MSE Loss: 10220.296110 | Val MSE Loss: 12113.138448
+Epoch 112/200 | LR: 4.20e-04 | Training MSE Loss: 10165.043133 | Val MSE Loss: 12047.720629
+Epoch 113/200 | LR: 4.12e-04 | Training MSE Loss: 10111.580719 | Val MSE Loss: 11984.636775
+Epoch 114/200 | LR: 4.05e-04 | Training MSE Loss: 10060.276406 | Val MSE Loss: 11923.371969
+Epoch 115/200 | LR: 3.97e-04 | Training MSE Loss: 10010.443282 | Val MSE Loss: 11864.258492
+Epoch 116/200 | LR: 3.89e-04 | Training MSE Loss: 9962.388373 | Val MSE Loss: 11807.175941
+Epoch 117/200 | LR: 3.82e-04 | Training MSE Loss: 9916.188722 | Val MSE Loss: 11751.634058
+Epoch 118/200 | LR: 3.74e-04 | Training MSE Loss: 9871.350140 | Val MSE Loss: 11697.991968
+Epoch 119/200 | LR: 3.67e-04 | Training MSE Loss: 9828.030204 | Val MSE Loss: 11646.228289
+Epoch 120/200 | LR: 3.59e-04 | Training MSE Loss: 9786.411550 | Val MSE Loss: 11595.909433
+Epoch 121/200 | LR: 3.52e-04 | Training MSE Loss: 9745.976492 | Val MSE Loss: 11547.342036
+Epoch 122/200 | LR: 3.45e-04 | Training MSE Loss: 9706.974140 | Val MSE Loss: 11500.300807
+Epoch 123/200 | LR: 3.37e-04 | Training MSE Loss: 9669.393329 | Val MSE Loss: 11454.588606
+Epoch 124/200 | LR: 3.30e-04 | Training MSE Loss: 9632.907954 | Val MSE Loss: 11410.404508
+Epoch 125/200 | LR: 3.23e-04 | Training MSE Loss: 9597.797244 | Val MSE Loss: 11367.693086
+Epoch 126/200 | LR: 3.16e-04 | Training MSE Loss: 9563.854291 | Val MSE Loss: 11326.286738
+Epoch 127/200 | LR: 3.08e-04 | Training MSE Loss: 9531.180965 | Val MSE Loss: 11286.309390
+Epoch 128/200 | LR: 3.01e-04 | Training MSE Loss: 9499.407121 | Val MSE Loss: 11247.718091
+Epoch 129/200 | LR: 2.94e-04 | Training MSE Loss: 9468.900070 | Val MSE Loss: 11210.292588
+Epoch 130/200 | LR: 2.87e-04 | Training MSE Loss: 9439.516745 | Val MSE Loss: 11174.097993
+Epoch 131/200 | LR: 2.80e-04 | Training MSE Loss: 9411.051142 | Val MSE Loss: 11139.039939
+Epoch 132/200 | LR: 2.73e-04 | Training MSE Loss: 9383.560734 | Val MSE Loss: 11105.186352
+Epoch 133/200 | LR: 2.67e-04 | Training MSE Loss: 9356.999942 | Val MSE Loss: 11072.576929
+Epoch 134/200 | LR: 2.60e-04 | Training MSE Loss: 9331.531958 | Val MSE Loss: 11041.047345
+Epoch 135/200 | LR: 2.53e-04 | Training MSE Loss: 9306.956032 | Val MSE Loss: 11010.304968
+Epoch 136/200 | LR: 2.46e-04 | Training MSE Loss: 9283.064851 | Val MSE Loss: 10980.798464
+Epoch 137/200 | LR: 2.40e-04 | Training MSE Loss: 9260.061641 | Val MSE Loss: 10952.402213
+Epoch 138/200 | LR: 2.33e-04 | Training MSE Loss: 9238.004915 | Val MSE Loss: 10924.750225
+Epoch 139/200 | LR: 2.27e-04 | Training MSE Loss: 9216.662259 | Val MSE Loss: 10898.225149
+Epoch 140/200 | LR: 2.20e-04 | Training MSE Loss: 9196.170752 | Val MSE Loss: 10872.572343
+Epoch 141/200 | LR: 2.14e-04 | Training MSE Loss: 9176.358782 | Val MSE Loss: 10847.733630
+Epoch 142/200 | LR: 2.08e-04 | Training MSE Loss: 9157.243710 | Val MSE Loss: 10823.803356
+Epoch 143/200 | LR: 2.02e-04 | Training MSE Loss: 9138.943927 | Val MSE Loss: 10800.561926
+Epoch 144/200 | LR: 1.96e-04 | Training MSE Loss: 9121.116117 | Val MSE Loss: 10778.263321
+Epoch 145/200 | LR: 1.89e-04 | Training MSE Loss: 9103.985361 | Val MSE Loss: 10756.823478
+Epoch 146/200 | LR: 1.84e-04 | Training MSE Loss: 9087.583841 | Val MSE Loss: 10736.081471
+Epoch 147/200 | LR: 1.78e-04 | Training MSE Loss: 9071.720447 | Val MSE Loss: 10716.141086
+Epoch 148/200 | LR: 1.72e-04 | Training MSE Loss: 9056.495061 | Val MSE Loss: 10696.861847
+Epoch 149/200 | LR: 1.66e-04 | Training MSE Loss: 9041.846903 | Val MSE Loss: 10678.257113
+Epoch 150/200 | LR: 1.61e-04 | Training MSE Loss: 9027.741655 | Val MSE Loss: 10660.437833
+Epoch 151/200 | LR: 1.55e-04 | Training MSE Loss: 9014.221109 | Val MSE Loss: 10643.289237
+Epoch 152/200 | LR: 1.50e-04 | Training MSE Loss: 9001.219791 | Val MSE Loss: 10626.810804
+Epoch 153/200 | LR: 1.44e-04 | Training MSE Loss: 8988.715339 | Val MSE Loss: 10610.968746
+Epoch 154/200 | LR: 1.39e-04 | Training MSE Loss: 8976.723165 | Val MSE Loss: 10595.702935
+Epoch 155/200 | LR: 1.34e-04 | Training MSE Loss: 8965.231772 | Val MSE Loss: 10581.013787
+Epoch 156/200 | LR: 1.29e-04 | Training MSE Loss: 8954.175278 | Val MSE Loss: 10566.962740
+Epoch 157/200 | LR: 1.24e-04 | Training MSE Loss: 8943.584078 | Val MSE Loss: 10553.485759
+Epoch 158/200 | LR: 1.19e-04 | Training MSE Loss: 8933.550757 | Val MSE Loss: 10540.458716
+Epoch 159/200 | LR: 1.14e-04 | Training MSE Loss: 8923.772195 | Val MSE Loss: 10528.230195
+Epoch 160/200 | LR: 1.09e-04 | Training MSE Loss: 8914.577624 | Val MSE Loss: 10516.405427
+Epoch 161/200 | LR: 1.05e-04 | Training MSE Loss: 8905.718821 | Val MSE Loss: 10505.083807
+Epoch 162/200 | LR: 1.00e-04 | Training MSE Loss: 8897.235050 | Val MSE Loss: 10494.179633
+Epoch 163/200 | LR: 9.56e-05 | Training MSE Loss: 8889.109057 | Val MSE Loss: 10483.802543
+Epoch 164/200 | LR: 9.13e-05 | Training MSE Loss: 8881.365475 | Val MSE Loss: 10473.925093
+Epoch 165/200 | LR: 8.71e-05 | Training MSE Loss: 8873.996228 | Val MSE Loss: 10464.486612
+Epoch 166/200 | LR: 8.29e-05 | Training MSE Loss: 8866.992277 | Val MSE Loss: 10455.476896
+Epoch 167/200 | LR: 7.89e-05 | Training MSE Loss: 8860.294141 | Val MSE Loss: 10446.929877
+Epoch 168/200 | LR: 7.50e-05 | Training MSE Loss: 8853.968134 | Val MSE Loss: 10438.757663
+Epoch 169/200 | LR: 7.12e-05 | Training MSE Loss: 8847.930359 | Val MSE Loss: 10430.993273
+Epoch 170/200 | LR: 6.75e-05 | Training MSE Loss: 8842.195824 | Val MSE Loss: 10423.644082
+Epoch 171/200 | LR: 6.40e-05 | Training MSE Loss: 8836.742613 | Val MSE Loss: 10416.729267
+Epoch 172/200 | LR: 6.05e-05 | Training MSE Loss: 8831.627984 | Val MSE Loss: 10410.129023
+Epoch 173/200 | LR: 5.71e-05 | Training MSE Loss: 8826.772180 | Val MSE Loss: 10403.865377
+Epoch 174/200 | LR: 5.39e-05 | Training MSE Loss: 8822.159413 | Val MSE Loss: 10397.974439
+Epoch 175/200 | LR: 5.07e-05 | Training MSE Loss: 8817.817860 | Val MSE Loss: 10392.404556
+Epoch 176/200 | LR: 4.77e-05 | Training MSE Loss: 8813.732932 | Val MSE Loss: 10387.160237
+Epoch 177/200 | LR: 4.48e-05 | Training MSE Loss: 8809.898991 | Val MSE Loss: 10382.204851
+Epoch 178/200 | LR: 4.20e-05 | Training MSE Loss: 8806.251316 | Val MSE Loss: 10377.618578
+Epoch 179/200 | LR: 3.93e-05 | Training MSE Loss: 8802.881369 | Val MSE Loss: 10373.253025
+Epoch 180/200 | LR: 3.67e-05 | Training MSE Loss: 8799.691538 | Val MSE Loss: 10369.182991
+Epoch 181/200 | LR: 3.42e-05 | Training MSE Loss: 8796.708501 | Val MSE Loss: 10365.372511
+Epoch 182/200 | LR: 3.19e-05 | Training MSE Loss: 8793.918829 | Val MSE Loss: 10361.815538
+Epoch 183/200 | LR: 2.97e-05 | Training MSE Loss: 8791.332063 | Val MSE Loss: 10358.475919
+Epoch 184/200 | LR: 2.75e-05 | Training MSE Loss: 8788.896720 | Val MSE Loss: 10355.385693
+Epoch 185/200 | LR: 2.56e-05 | Training MSE Loss: 8786.653235 | Val MSE Loss: 10352.501228
+Epoch 186/200 | LR: 2.37e-05 | Training MSE Loss: 8784.548803 | Val MSE Loss: 10349.822544
+Epoch 187/200 | LR: 2.19e-05 | Training MSE Loss: 8782.590888 | Val MSE Loss: 10347.343698
+Epoch 188/200 | LR: 2.03e-05 | Training MSE Loss: 8780.790275 | Val MSE Loss: 10345.025255
+Epoch 189/200 | LR: 1.88e-05 | Training MSE Loss: 8779.097618 | Val MSE Loss: 10342.885270
+Epoch 190/200 | LR: 1.74e-05 | Training MSE Loss: 8777.539771 | Val MSE Loss: 10340.886074
+Epoch 191/200 | LR: 1.61e-05 | Training MSE Loss: 8776.091304 | Val MSE Loss: 10339.014369
+Epoch 192/200 | LR: 1.49e-05 | Training MSE Loss: 8774.733001 | Val MSE Loss: 10337.276888
+Epoch 193/200 | LR: 1.39e-05 | Training MSE Loss: 8773.470053 | Val MSE Loss: 10335.660331
+Epoch 194/200 | LR: 1.30e-05 | Training MSE Loss: 8772.282162 | Val MSE Loss: 10334.149637
+Epoch 195/200 | LR: 1.22e-05 | Training MSE Loss: 8771.178263 | Val MSE Loss: 10332.714531
+Epoch 196/200 | LR: 1.15e-05 | Training MSE Loss: 8770.124618 | Val MSE Loss: 10331.364571
+Epoch 197/200 | LR: 1.10e-05 | Training MSE Loss: 8769.130931 | Val MSE Loss: 10330.067594
+Epoch 198/200 | LR: 1.05e-05 | Training MSE Loss: 8768.168942 | Val MSE Loss: 10328.814064
+Epoch 199/200 | LR: 1.02e-05 | Training MSE Loss: 8767.236336 | Val MSE Loss: 10327.591803
+Epoch 200/200 | LR: 1.01e-05 | Training MSE Loss: 8766.330630 | Val MSE Loss: 10326.376129
+Model train step wrapped with torch.compile().
+Starting Contrastive Alignment + Forecasting training (with Scheduled Manifold Sampling)...
+C:\Users\mycha\AppData\Roaming\Python\Python314\site-packages\torch\_inductor\compile_fx.py:321: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+
+[WARNING] torch.compile failed during execution: RuntimeError: Failed to find C compiler. Please specify via CC environment variable.
+
+Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+.
+Permanently falling back to high-performance GPU Eager Mode.
+Epoch 1/120 | LR: 1.00e-03 | Total Loss: 69264.803812 | InfoNCE: 6.9093 | MSE: 69263.075567 | Align Acc: 0.07% | Blend Weight: 1.000 | Val Loss: 66222.286989 | Val MSE: 66220.567240 | Val Align Acc: 0.10%
+Epoch 2/120 | LR: 1.00e-03 | Total Loss: 53483.003817 | InfoNCE: 6.9052 | MSE: 53481.276194 | Align Acc: 0.11% | Blend Weight: 1.000 | Val Loss: 47246.341617 | Val MSE: 47244.623697 | Val Align Acc: 0.10%
+Epoch 3/120 | LR: 9.99e-04 | Total Loss: 34336.416330 | InfoNCE: 6.9052 | MSE: 34334.689401 | Align Acc: 0.12% | Blend Weight: 1.000 | Val Loss: 27000.244041 | Val MSE: 26998.526246 | Val Align Acc: 0.10%
+Epoch 4/120 | LR: 9.98e-04 | Total Loss: 16859.275563 | InfoNCE: 6.9052 | MSE: 16857.549257 | Align Acc: 0.12% | Blend Weight: 1.000 | Val Loss: 12046.128588 | Val MSE: 12044.410793 | Val Align Acc: 0.10%
+Epoch 5/120 | LR: 9.97e-04 | Total Loss: 8428.096359 | InfoNCE: 6.9052 | MSE: 8426.369880 | Align Acc: 0.10% | Blend Weight: 1.000 | Val Loss: 8570.538942 | Val MSE: 8568.821375 | Val Align Acc: 0.10%
+Epoch 7/120 | LR: 9.94e-04 | Total Loss: 7762.710296 | InfoNCE: 6.9052 | MSE: 7760.984011 | Align Acc: 0.10% | Blend Weight: 1.000 | Val Loss: 8515.815562 | Val MSE: 8514.097995 | Val Align Acc: 0.10%
+Epoch 8/120 | LR: 9.92e-04 | Total Loss: 7728.858967 | InfoNCE: 6.9052 | MSE: 7727.132683 | Align Acc: 0.10% | Blend Weight: 1.000 | Val Loss: 8454.560375 | Val MSE: 8452.842808 | Val Align Acc: 0.10%
+Epoch 10/120 | LR: 9.86e-04 | Total Loss: 7642.070973 | InfoNCE: 6.9065 | MSE: 7640.344349 | Align Acc: 0.12% | Blend Weight: 1.000 | Val Loss: 8192.748526 | Val MSE: 8191.028258 | Val Align Acc: 0.00%
+Epoch 11/120 | LR: 9.83e-04 | Total Loss: 6746.999567 | InfoNCE: 6.9268 | MSE: 6745.267926 | Align Acc: 0.05% | Blend Weight: 1.000 | Val Loss: 6051.879967 | Val MSE: 6050.156479 | Val Align Acc: 0.00%
+Epoch 12/120 | LR: 9.80e-04 | Total Loss: 5274.888979 | InfoNCE: 6.9244 | MSE: 5273.157911 | Align Acc: 0.07% | Blend Weight: 1.000 | Val Loss: 5515.289597 | Val MSE: 5513.567864 | Val Align Acc: 0.00%
+Epoch 13/120 | LR: 9.76e-04 | Total Loss: 5010.933763 | InfoNCE: 6.9208 | MSE: 5009.203608 | Align Acc: 0.14% | Blend Weight: 1.000 | Val Loss: 5483.853561 | Val MSE: 5482.131828 | Val Align Acc: 0.00%
+Epoch 14/120 | LR: 9.72e-04 | Total Loss: 4942.577335 | InfoNCE: 6.9189 | MSE: 4940.847555 | Align Acc: 0.16% | Blend Weight: 1.000 | Val Loss: 5329.359572 | Val MSE: 5327.638327 | Val Align Acc: 0.00%
+Epoch 16/120 | LR: 9.62e-04 | Total Loss: 4863.736772 | InfoNCE: 6.9158 | MSE: 4862.007851 | Align Acc: 0.15% | Blend Weight: 1.000 | Val Loss: 5287.156550 | Val MSE: 5285.436054 | Val Align Acc: 0.00%
+Epoch 17/120 | LR: 9.57e-04 | Total Loss: 4825.771131 | InfoNCE: 6.9150 | MSE: 4824.042345 | Align Acc: 0.16% | Blend Weight: 1.000 | Val Loss: 5240.015230 | Val MSE: 5238.294962 | Val Align Acc: 0.00%
+Epoch 18/120 | LR: 9.52e-04 | Total Loss: 4734.659235 | InfoNCE: 6.9147 | MSE: 4732.930526 | Align Acc: 0.15% | Blend Weight: 1.000 | Val Loss: 5031.979582 | Val MSE: 5030.258826 | Val Align Acc: 0.00%
+Epoch 19/120 | LR: 9.46e-04 | Total Loss: 4373.492850 | InfoNCE: 6.9213 | MSE: 4371.762557 | Align Acc: 0.15% | Blend Weight: 1.000 | Val Loss: 4360.101503 | Val MSE: 4358.378160 | Val Align Acc: 0.05%
+Epoch 20/120 | LR: 9.40e-04 | Total Loss: 3492.332367 | InfoNCE: 6.9297 | MSE: 3490.599938 | Align Acc: 0.16% | Blend Weight: 1.000 | Val Loss: 3156.695575 | Val MSE: 3154.971629 | Val Align Acc: 0.10%
+Epoch 21/120 | LR: 9.34e-04 | Total Loss: 2307.899030 | InfoNCE: 6.9309 | MSE: 2306.166289 | Align Acc: 0.11% | Blend Weight: 1.000 | Val Loss: 1864.875660 | Val MSE: 1863.150909 | Val Align Acc: 0.00%
+Epoch 22/120 | LR: 9.27e-04 | Total Loss: 1168.687172 | InfoNCE: 6.9328 | MSE: 1166.953988 | Align Acc: 0.12% | Blend Weight: 1.000 | Val Loss: 830.819225 | Val MSE: 829.095332 | Val Align Acc: 0.00%
+Epoch 23/120 | LR: 9.20e-04 | Total Loss: 514.726633 | InfoNCE: 6.9280 | MSE: 512.994631 | Align Acc: 0.11% | Blend Weight: 1.000 | Val Loss: 366.301009 | Val MSE: 364.578169 | Val Align Acc: 0.05%
+Epoch 24/120 | LR: 9.13e-04 | Total Loss: 348.841428 | InfoNCE: 6.9234 | MSE: 347.110562 | Align Acc: 0.07% | Blend Weight: 1.000 | Val Loss: 286.091448 | Val MSE: 284.368673 | Val Align Acc: 0.05%
+Epoch 25/120 | LR: 9.05e-04 | Total Loss: 262.013394 | InfoNCE: 6.9228 | MSE: 260.282703 | Align Acc: 0.05% | Blend Weight: 1.000 | Val Loss: 247.925434 | Val MSE: 246.203170 | Val Align Acc: 0.05%
+Epoch 27/120 | LR: 8.90e-04 | Total Loss: 228.417205 | InfoNCE: 6.9215 | MSE: 226.686827 | Align Acc: 0.11% | Blend Weight: 1.000 | Val Loss: 212.458943 | Val MSE: 210.736739 | Val Align Acc: 0.05%
+Epoch 28/120 | LR: 8.81e-04 | Total Loss: 223.433809 | InfoNCE: 6.9206 | MSE: 221.703669 | Align Acc: 0.05% | Blend Weight: 1.000 | Val Loss: 206.715964 | Val MSE: 204.994182 | Val Align Acc: 0.05%
+Epoch 30/120 | LR: 8.64e-04 | Total Loss: 205.689775 | InfoNCE: 6.9197 | MSE: 203.959852 | Align Acc: 0.07% | Blend Weight: 1.000 | Val Loss: 192.801490 | Val MSE: 191.079900 | Val Align Acc: 0.05%
+Epoch 31/120 | LR: 8.55e-04 | Total Loss: 203.947482 | InfoNCE: 6.9193 | MSE: 202.217645 | Align Acc: 0.04% | Blend Weight: 1.000 | Val Loss: 190.003184 | Val MSE: 188.281589 | Val Align Acc: 0.05%
+Epoch 33/120 | LR: 8.36e-04 | Total Loss: 208.167787 | InfoNCE: 6.9185 | MSE: 206.438160 | Align Acc: 0.06% | Blend Weight: 0.999 | Val Loss: 189.888894 | Val MSE: 188.167582 | Val Align Acc: 0.05%
+Epoch 34/120 | LR: 8.26e-04 | Total Loss: 193.558660 | InfoNCE: 6.9184 | MSE: 191.829061 | Align Acc: 0.06% | Blend Weight: 0.999 | Val Loss: 174.781879 | Val MSE: 173.060446 | Val Align Acc: 0.05%
+Epoch 35/120 | LR: 8.17e-04 | Total Loss: 181.972296 | InfoNCE: 6.9183 | MSE: 180.242712 | Align Acc: 0.07% | Blend Weight: 0.998 | Val Loss: 173.452854 | Val MSE: 171.731501 | Val Align Acc: 0.05%
+Epoch 39/120 | LR: 7.75e-04 | Total Loss: 175.908089 | InfoNCE: 6.9168 | MSE: 174.178887 | Align Acc: 0.06% | Blend Weight: 0.995 | Val Loss: 164.074810 | Val MSE: 162.353858 | Val Align Acc: 0.10%
+Epoch 40/120 | LR: 7.64e-04 | Total Loss: 177.645430 | InfoNCE: 6.9164 | MSE: 175.916328 | Align Acc: 0.07% | Blend Weight: 0.994 | Val Loss: 168.420915 | Val MSE: 166.700055 | Val Align Acc: 0.10%
+Epoch 46/120 | LR: 6.94e-04 | Total Loss: 163.023983 | InfoNCE: 6.9151 | MSE: 161.295206 | Align Acc: 0.08% | Blend Weight: 0.986 | Val Loss: 159.263410 | Val MSE: 157.542866 | Val Align Acc: 0.05%
+Epoch 50/120 | LR: 6.46e-04 | Total Loss: 157.393121 | InfoNCE: 6.9141 | MSE: 155.664590 | Align Acc: 0.05% | Blend Weight: 0.976 | Val Loss: 159.314390 | Val MSE: 157.594084 | Val Align Acc: 0.10%
+Epoch 51/120 | LR: 6.33e-04 | Total Loss: 157.749405 | InfoNCE: 6.9139 | MSE: 156.020930 | Align Acc: 0.04% | Blend Weight: 0.973 | Val Loss: 157.125050 | Val MSE: 155.404791 | Val Align Acc: 0.05%
+Epoch 54/120 | LR: 5.95e-04 | Total Loss: 151.664664 | InfoNCE: 6.9135 | MSE: 149.936290 | Align Acc: 0.03% | Blend Weight: 0.962 | Val Loss: 155.608260 | Val MSE: 153.888155 | Val Align Acc: 0.10%
+Epoch 59/120 | LR: 5.31e-04 | Total Loss: 147.854384 | InfoNCE: 6.9124 | MSE: 146.126293 | Align Acc: 0.06% | Blend Weight: 0.935 | Val Loss: 155.406204 | Val MSE: 153.686343 | Val Align Acc: 0.16%
+Epoch 60/120 | LR: 5.18e-04 | Total Loss: 146.433156 | InfoNCE: 6.9122 | MSE: 144.705107 | Align Acc: 0.04% | Blend Weight: 0.928 | Val Loss: 154.206184 | Val MSE: 152.486401 | Val Align Acc: 0.10%
+Epoch 64/120 | LR: 4.66e-04 | Total Loss: 143.098645 | InfoNCE: 6.9116 | MSE: 141.370754 | Align Acc: 0.06% | Blend Weight: 0.894 | Val Loss: 153.379864 | Val MSE: 151.660188 | Val Align Acc: 0.16%
+Epoch 66/120 | LR: 4.40e-04 | Total Loss: 143.176946 | InfoNCE: 6.9113 | MSE: 141.449125 | Align Acc: 0.05% | Blend Weight: 0.874 | Val Loss: 153.064012 | Val MSE: 151.344468 | Val Align Acc: 0.10%
+Epoch 67/120 | LR: 4.28e-04 | Total Loss: 140.745381 | InfoNCE: 6.9112 | MSE: 139.017590 | Align Acc: 0.05% | Blend Weight: 0.863 | Val Loss: 151.540850 | Val MSE: 149.821351 | Val Align Acc: 0.10%
+Epoch 70/120 | LR: 3.89e-04 | Total Loss: 139.781819 | InfoNCE: 6.9109 | MSE: 138.054101 | Align Acc: 0.06% | Blend Weight: 0.826 | Val Loss: 152.906816 | Val MSE: 151.187395 | Val Align Acc: 0.10%
+Epoch 71/120 | LR: 3.77e-04 | Total Loss: 137.838654 | InfoNCE: 6.9107 | MSE: 136.110976 | Align Acc: 0.05% | Blend Weight: 0.813 | Val Loss: 149.252587 | Val MSE: 147.533157 | Val Align Acc: 0.10%
+Epoch 73/120 | LR: 3.52e-04 | Total Loss: 137.050923 | InfoNCE: 6.9104 | MSE: 135.323312 | Align Acc: 0.02% | Blend Weight: 0.785 | Val Loss: 148.368415 | Val MSE: 146.649047 | Val Align Acc: 0.10%
+Epoch 74/120 | LR: 3.40e-04 | Total Loss: 137.332584 | InfoNCE: 6.9103 | MSE: 135.605000 | Align Acc: 0.06% | Blend Weight: 0.771 | Val Loss: 147.964288 | Val MSE: 146.244941 | Val Align Acc: 0.10%
+Epoch 76/120 | LR: 3.16e-04 | Total Loss: 135.580475 | InfoNCE: 6.9102 | MSE: 133.852917 | Align Acc: 0.05% | Blend Weight: 0.743 | Val Loss: 147.631499 | Val MSE: 145.912238 | Val Align Acc: 0.10%
+Epoch 79/120 | LR: 2.80e-04 | Total Loss: 134.232904 | InfoNCE: 6.9099 | MSE: 132.505435 | Align Acc: 0.07% | Blend Weight: 0.701 | Val Loss: 147.195147 | Val MSE: 145.475931 | Val Align Acc: 0.10%
+Epoch 80/120 | LR: 2.69e-04 | Total Loss: 133.822405 | InfoNCE: 6.9098 | MSE: 132.094943 | Align Acc: 0.06% | Blend Weight: 0.687 | Val Loss: 145.962413 | Val MSE: 144.243212 | Val Align Acc: 0.10%
+Epoch 87/120 | LR: 1.93e-04 | Total Loss: 130.274301 | InfoNCE: 6.9095 | MSE: 128.546917 | Align Acc: 0.06% | Blend Weight: 0.606 | Val Loss: 145.453636 | Val MSE: 143.734520 | Val Align Acc: 0.10%
+Epoch 89/120 | LR: 1.74e-04 | Total Loss: 130.155494 | InfoNCE: 6.9095 | MSE: 128.428120 | Align Acc: 0.06% | Blend Weight: 0.588 | Val Loss: 145.298320 | Val MSE: 143.579196 | Val Align Acc: 0.10%
+Epoch 90/120 | LR: 1.64e-04 | Total Loss: 129.612838 | InfoNCE: 6.9095 | MSE: 127.885465 | Align Acc: 0.06% | Blend Weight: 0.580 | Val Loss: 145.774901 | Val MSE: 144.055784 | Val Align Acc: 0.10%
+Epoch 96/120 | LR: 1.12e-04 | Total Loss: 128.065441 | InfoNCE: 6.9095 | MSE: 126.338078 | Align Acc: 0.05% | Blend Weight: 0.543 | Val Loss: 145.152827 | Val MSE: 143.433726 | Val Align Acc: 0.10%
+Epoch 97/120 | LR: 1.05e-04 | Total Loss: 127.825990 | InfoNCE: 6.9095 | MSE: 126.098624 | Align Acc: 0.07% | Blend Weight: 0.538 | Val Loss: 143.820077 | Val MSE: 142.100976 | Val Align Acc: 0.10%
+Epoch 100/120 | LR: 8.29e-05 | Total Loss: 127.602554 | InfoNCE: 6.9094 | MSE: 125.875193 | Align Acc: 0.09% | Blend Weight: 0.527 | Val Loss: 146.542393 | Val MSE: 144.823269 | Val Align Acc: 0.10%
+Epoch 101/120 | LR: 7.63e-05 | Total Loss: 127.681621 | InfoNCE: 6.9095 | MSE: 125.954255 | Align Acc: 0.06% | Blend Weight: 0.524 | Val Loss: 143.521531 | Val MSE: 141.802437 | Val Align Acc: 0.10%
+Epoch 110/120 | LR: 3.04e-05 | Total Loss: 125.991091 | InfoNCE: 6.9095 | MSE: 124.263722 | Align Acc: 0.07% | Blend Weight: 0.507 | Val Loss: 144.547972 | Val MSE: 142.828870 | Val Align Acc: 0.10%
+Epoch 120/120 | LR: 1.02e-05 | Total Loss: 125.339887 | InfoNCE: 6.9095 | MSE: 123.612519 | Align Acc: 0.10% | Blend Weight: 0.500 | Val Loss: 143.970610 | Val MSE: 142.251508 | Val Align Acc: 0.10%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 185...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 185...
+Successfully saved trajectory animation to trajectory_animation_ep_185.gif
+Episode 185 | Baseline: 93.405701 | Contrastive: 24.676443 | Improvement: 73.58%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 186...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 186...
+Successfully saved trajectory animation to trajectory_animation_ep_186.gif
+Episode 186 | Baseline: 187.116058 | Contrastive: 42.047813 | Improvement: 77.53%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 187...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 187...
+Successfully saved trajectory animation to trajectory_animation_ep_187.gif
+Episode 187 | Baseline: 142.690933 | Contrastive: 37.788734 | Improvement: 73.52%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 188...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 188...
+Successfully saved trajectory animation to trajectory_animation_ep_188.gif
+Episode 188 | Baseline: 147.557266 | Contrastive: 51.465782 | Improvement: 65.12%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 189...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 189...
+Successfully saved trajectory animation to trajectory_animation_ep_189.gif
+Episode 189 | Baseline: 85.175369 | Contrastive: 40.231415 | Improvement: 52.77%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 190...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 190...
+Successfully saved trajectory animation to trajectory_animation_ep_190.gif
+Episode 190 | Baseline: 216.520935 | Contrastive: 36.005650 | Improvement: 83.37%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 191...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 191...
+Successfully saved trajectory animation to trajectory_animation_ep_191.gif
+Episode 191 | Baseline: 150.665100 | Contrastive: 47.715221 | Improvement: 68.33%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 192...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 192...
+Successfully saved trajectory animation to trajectory_animation_ep_192.gif
+Episode 192 | Baseline: 177.282928 | Contrastive: 48.884377 | Improvement: 72.43%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 193...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 193...
+Successfully saved trajectory animation to trajectory_animation_ep_193.gif
+Episode 193 | Baseline: 134.775330 | Contrastive: 38.549400 | Improvement: 71.40%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 194...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 194...
+Successfully saved trajectory animation to trajectory_animation_ep_194.gif
+Episode 194 | Baseline: 154.333176 | Contrastive: 39.080090 | Improvement: 74.68%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 195...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 195...
+Successfully saved trajectory animation to trajectory_animation_ep_195.gif
+Episode 195 | Baseline: 166.126511 | Contrastive: 45.273312 | Improvement: 72.75%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 196...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 196...
+Successfully saved trajectory animation to trajectory_animation_ep_196.gif
+Episode 196 | Baseline: 137.669357 | Contrastive: 22.937088 | Improvement: 83.34%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 197...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 197...
+Successfully saved trajectory animation to trajectory_animation_ep_197.gif
+Episode 197 | Baseline: 62.378231 | Contrastive: 34.826729 | Improvement: 44.17%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 198...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 198...
+Successfully saved trajectory animation to trajectory_animation_ep_198.gif
+Episode 198 | Baseline: 128.907867 | Contrastive: 34.308315 | Improvement: 73.39%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 199...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 199...
+Successfully saved trajectory animation to trajectory_animation_ep_199.gif
+Episode 199 | Baseline: 157.428940 | Contrastive: 53.082653 | Improvement: 66.28%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 200...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 200...
+Successfully saved trajectory animation to trajectory_animation_ep_200.gif
+Episode 200 | Baseline: 186.978180 | Contrastive: 41.692928 | Improvement: 77.70%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 201...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 201...
+Successfully saved trajectory animation to trajectory_animation_ep_201.gif
+Episode 201 | Baseline: 127.868340 | Contrastive: 25.117386 | Improvement: 80.36%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 202...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 202...
+Successfully saved trajectory animation to trajectory_animation_ep_202.gif
+Episode 202 | Baseline: 143.180115 | Contrastive: 44.513927 | Improvement: 68.91%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 203...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 203...
+Successfully saved trajectory animation to trajectory_animation_ep_203.gif
+Episode 203 | Baseline: 206.562347 | Contrastive: 26.303936 | Improvement: 87.27%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 204...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 204...
+Successfully saved trajectory animation to trajectory_animation_ep_204.gif
+Episode 204 | Baseline: 215.291763 | Contrastive: 40.051777 | Improvement: 81.40%
+Running Baseline Closed-Loop Rollout in MuJoCo for Episode 205...
+Running Contrastive Aligned Closed-Loop Rollout in MuJoCo for Episode 205...
+Successfully saved trajectory animation to trajectory_animation_ep_205.gif
+Episode 205 | Baseline: 76.732529 | Contrastive: 37.301224 | Improvement: 51.39%
+
+==================================================
+EXPERIMENT EVALUATION RESULTS (ON HELD-OUT TEST EPISODES):
+Episode 185:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 93.405701
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 24.676443
+  Visual Grounding Drift Reduction: 73.58%
+Episode 186:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 187.116058
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 42.047813
+  Visual Grounding Drift Reduction: 77.53%
+Episode 187:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 142.690933
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 37.788734
+  Visual Grounding Drift Reduction: 73.52%
+Episode 188:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 147.557266
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 51.465782
+  Visual Grounding Drift Reduction: 65.12%
+Episode 189:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 85.175369
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 40.231415
+  Visual Grounding Drift Reduction: 52.77%
+Episode 190:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 216.520935
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 36.005650
+  Visual Grounding Drift Reduction: 83.37%
+Episode 191:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 150.665100
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 47.715221
+  Visual Grounding Drift Reduction: 68.33%
+Episode 192:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 177.282928
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 48.884377
+  Visual Grounding Drift Reduction: 72.43%
+Episode 193:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 134.775330
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 38.549400
+  Visual Grounding Drift Reduction: 71.40%
+Episode 194:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 154.333176
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 39.080090
+  Visual Grounding Drift Reduction: 74.68%
+Episode 195:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 166.126511
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 45.273312
+  Visual Grounding Drift Reduction: 72.75%
+Episode 196:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 137.669357
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 22.937088
+  Visual Grounding Drift Reduction: 83.34%
+Episode 197:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 62.378231
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 34.826729
+  Visual Grounding Drift Reduction: 44.17%
+Episode 198:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 128.907867
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 34.308315
+  Visual Grounding Drift Reduction: 73.39%
+Episode 199:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 157.428940
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 53.082653
+  Visual Grounding Drift Reduction: 66.28%
+Episode 200:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 186.978180
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 41.692928
+  Visual Grounding Drift Reduction: 77.70%
+Episode 201:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 127.868340
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 25.117386
+  Visual Grounding Drift Reduction: 80.36%
+Episode 202:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 143.180115
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 44.513927
+  Visual Grounding Drift Reduction: 68.91%
+Episode 203:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 206.562347
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 26.303936
+  Visual Grounding Drift Reduction: 87.27%
+Episode 204:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 215.291763
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 40.051777
+  Visual Grounding Drift Reduction: 81.40%
+Episode 205:
+  Baseline LSTM Trajectory Drift (Average L2 Error): 76.732529
+  Contrastive Aligned Trajectory Drift (Average L2 Error): 37.301224
+  Visual Grounding Drift Reduction: 51.39%
+==================================================
+
+Run completed. Results: {'baseline_drift': np.float64(147.55461792718796), 'contrastive_drift': np.float64(38.65972382681711), 'test_results': {'185': {'baseline_drift': 93.40570068359375, 'contrastive_drift': 24.676443099975586, 'improvement_percent': 73.58143783582807, 'plot_path': 'trajectory_comparison_ep_185.png', 'gif_path': 'trajectory_animation_ep_185.gif'}, '186': {'baseline_drift': 187.11605834960938, 'contrastive_drift': 42.047813415527344, 'improvement_percent': 77.52848484176337, 'plot_path': 'trajectory_comparison_ep_186.png', 'gif_path': 'trajectory_animation_ep_186.gif'}, '187': {'baseline_drift': 142.69093322753906, 'contrastive_drift': 37.788734436035156, 'improvement_percent': 73.51707387337908, 'plot_path': 'trajectory_comparison_ep_187.png', 'gif_path': 'trajectory_animation_ep_187.gif'}, '188': {'baseline_drift': 147.55726623535156, 'contrastive_drift': 51.465782165527344, 'improvement_percent': 65.12148572647028, 'plot_path': 'trajectory_comparison_ep_188.png', 'gif_path': 'trajectory_animation_ep_188.gif'}, '189': {'baseline_drift': 85.17536926269531, 'contrastive_drift': 40.231414794921875, 'improvement_percent': 52.76637466537849, 'plot_path': 'trajectory_comparison_ep_189.png', 'gif_path': 'trajectory_animation_ep_189.gif'}, '190': {'baseline_drift': 216.52093505859375, 'contrastive_drift': 36.00564956665039, 'improvement_percent': 83.37082298443487, 'plot_path': 'trajectory_comparison_ep_190.png', 'gif_path': 'trajectory_animation_ep_190.gif'}, '191': {'baseline_drift': 150.66510009765625, 'contrastive_drift': 47.7152214050293, 'improvement_percent': 68.3302759735985, 'plot_path': 'trajectory_comparison_ep_191.png', 'gif_path': 'trajectory_animation_ep_191.gif'}, '192': {'baseline_drift': 177.28292846679688, 'contrastive_drift': 48.884376525878906, 'improvement_percent': 72.42578462086134, 'plot_path': 'trajectory_comparison_ep_192.png', 'gif_path': 'trajectory_animation_ep_192.gif'}, '193': {'baseline_drift': 134.77532958984375, 'contrastive_drift': 38.549400329589844, 'improvement_percent': 71.39728728773608, 'plot_path': 'trajectory_comparison_ep_193.png', 'gif_path': 'trajectory_animation_ep_193.gif'}, '194': {'baseline_drift': 154.3331756591797, 'contrastive_drift': 39.0800895690918, 'improvement_percent': 74.67810183897598, 'plot_path': 'trajectory_comparison_ep_194.png', 'gif_path': 'trajectory_animation_ep_194.gif'}, '195': {'baseline_drift': 166.1265106201172, 'contrastive_drift': 45.273311614990234, 'improvement_percent': 72.74769003093246, 'plot_path': 'trajectory_comparison_ep_195.png', 'gif_path': 'trajectory_animation_ep_195.gif'}, '196': {'baseline_drift': 137.6693572998047, 'contrastive_drift': 22.937088012695312, 'improvement_percent': 83.33900262006391, 'plot_path': 'trajectory_comparison_ep_196.png', 'gif_path': 'trajectory_animation_ep_196.gif'}, '197': {'baseline_drift': 62.378231048583984, 'contrastive_drift': 34.82672882080078, 'improvement_percent': 44.168457111783766, 'plot_path': 'trajectory_comparison_ep_197.png', 'gif_path': 'trajectory_animation_ep_197.gif'}, '198': {'baseline_drift': 128.90786743164062, 'contrastive_drift': 34.30831527709961, 'improvement_percent': 73.38539845499098, 'plot_path': 'trajectory_comparison_ep_198.png', 'gif_path': 'trajectory_animation_ep_198.gif'}, '199': {'baseline_drift': 157.42893981933594, 'contrastive_drift': 53.0826530456543, 'improvement_percent': 66.28151526233266, 'plot_path': 'trajectory_comparison_ep_199.png', 'gif_path': 'trajectory_animation_ep_199.gif'}, '200': {'baseline_drift': 186.97817993164062, 'contrastive_drift': 41.692928314208984, 'improvement_percent': 77.70171453725138, 'plot_path': 'trajectory_comparison_ep_200.png', 'gif_path': 'trajectory_animation_ep_200.gif'}, '201': {'baseline_drift': 127.86833953857422, 'contrastive_drift': 25.117385864257812, 'improvement_percent': 80.35683738844469, 'plot_path': 'trajectory_comparison_ep_201.png', 'gif_path': 'trajectory_animation_ep_201.gif'}, '202': {'baseline_drift': 143.18011474609375, 'contrastive_drift': 44.5139274597168, 'improvement_percent': 68.9105379342272, 'plot_path': 'trajectory_comparison_ep_202.png', 'gif_path': 'trajectory_animation_ep_202.gif'}, '203': {'baseline_drift': 206.56234741210938, 'contrastive_drift': 26.303936004638672, 'improvement_percent': 87.26586121130775, 'plot_path': 'trajectory_comparison_ep_203.png', 'gif_path': 'trajectory_animation_ep_203.gif'}, '204': {'baseline_drift': 215.29176330566406, 'contrastive_drift': 40.05177688598633, 'improvement_percent': 81.39651221625132, 'plot_path': 'trajectory_comparison_ep_204.png', 'gif_path': 'trajectory_animation_ep_204.gif'}, '205': {'baseline_drift': 76.73252868652344, 'contrastive_drift': 37.30122375488281, 'improvement_percent': 51.38799099496634, 'plot_path': 'trajectory_comparison_ep_205.png', 'gif_path': 'trajectory_animation_ep_205.gif'}}}
+
+C:\Users\mycha\Documents\vrojepa195>

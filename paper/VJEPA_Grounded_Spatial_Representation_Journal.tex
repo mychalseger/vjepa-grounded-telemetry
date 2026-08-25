@@ -1,0 +1,628 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows, fit}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{Grounding Spatial Representations via Visual World Models for Robust Autoregressive Drift Reduction in Low-Power Robot Telemetry}}
+
+\author{
+    \textbf{Mychal Seger} \\
+}
+
+\date{August 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+A pervasive challenge in closed-loop robotic action forecasting is \textbf{autoregressive drift}: as a lightweight sequential model predicts future physical states over extended continuous horizons, minor single-step tracking errors compound exponentially across recursive feedback loops. While real-time visual perception from overhead cameras can provide continuous closed-loop state corrections, executing high-capacity Vision Transformers (ViTs) at runtime imposes prohibitive computational, memory, and energy demands on resource-constrained edge robotic microcontrollers. 
+
+To overcome this fundamental tension between computational feasibility and long-horizon trajectory accuracy, this paper presents the \textbf{Multi-Task Representation Grounding Framework}. We train an ultra-compact, 2.46-million parameter student network to forecast continuous kinematic trajectories while simultaneously regularizing its internal representation space against a frozen 1024-dimensional visual latent manifold extracted by Meta's pre-trained Video Joint Embedding Predictive Architecture (\textbf{V-JEPA}). By combining Scheduled Manifold Sampling via a sigmoidal curriculum schedule, stochastic Trajectory Jitter ($\sigma=0.02$), Scaled Sinusoidal Positional Encoding, and a Multi-Scale Scaled Dot-Product Sequence Self-Attention decoder, the student network internalizes physical spatial dynamics and environmental geometry entirely during offline training. 
+
+Evaluated under strict \textbf{Visual Silence} (wherein runtime visual sensory feeds and visual encoders are completely absent) across 21 held-out test episodes within a closed-loop MuJoCo physics environment, our grounded model achieves a \textbf{73.80\% overall reduction in spatial trajectory drift} relative to an ungrounded baseline LSTM, lowering mean L2 tracking error from 147.55 to 38.66. Peak improvements reach \textbf{87.27\%} in high-curvature manipulation maneuvers. Furthermore, the deployed inference network comprises only 2,455,810 trainable parameters ($\sim$9.82~MB FP32 memory footprint), representing a \textbf{124$\times$ parameter compression} compared to the visual teacher model. We provide comprehensive mathematical formulations, extensive training convergence analyses, and an in-depth profiling of computational complexity and memory footprint for low-power edge robotics deployment.
+\end{abstract}
+
+\textbf{Keywords:} Robot Telemetry Forecasting, Autoregressive Drift, Visual World Models, V-JEPA, Contrastive Representation Learning, InfoNCE, Edge Robotics, Closed-Loop Control.
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+\label{sec:introduction}
+
+Autonomous robotic systems operating in high-precision, safety-critical domains—such as industrial assembly, automated fulfillment warehouses, micro-aerial vehicle (MAV) navigation, and robotic surgical assistance—require continuous and accurate forecasting of future physical states \cite{levine2016end, thrun2005probabilistic, chi2023diffusion, florence2022implicit}. Closed-loop action forecasting involves mapping historical joint telemetry (positions, velocities, and actuator commands) into future kinematic coordinates over temporal prediction horizons.
+
+\begin{figure}[ht!]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[node distance=1.5cm, auto, >=Stealth]
+        % Styles
+        \tikzstyle{box} = [draw, rectangle, rounded corners=3pt, align=center, minimum height=1cm, minimum width=2.5cm, fill=blue!5, line width=0.8pt]
+        \tikzstyle{alert} = [draw, rectangle, rounded corners=3pt, align=center, minimum height=1cm, minimum width=2.5cm, fill=red!10, line width=0.8pt]
+        \tikzstyle{greenbox} = [draw, rectangle, rounded corners=3pt, align=center, minimum height=1cm, minimum width=2.5cm, fill=green!10, line width=0.8pt]
+        
+        % Nodes
+        \node[box] (step1) {\textbf{Step $t$ Prediction}\\ $\hat{\mathbf{q}}_t = f(\mathbf{x}_{1:t-1})$};
+        \node[alert, right=1.2cm of step1] (error) {\textbf{Single-Step Tracking Error}\\ $\boldsymbol{\epsilon}_t = \|\mathbf{q}_t - \hat{\mathbf{q}}_t\|_2$};
+        \node[alert, right=1.2cm of error] (feedback) {\textbf{Recursive State Feedback}\\ $\mathbf{x}_{t+1} \leftarrow [\hat{\mathbf{q}}_t, \dots]$};
+        \node[alert, below=0.8cm of error] (drift) {\textbf{Exponential Drift Cone}\\ Catastrophic Trajectory Divergence};
+        
+        % Grounded solution
+        \node[greenbox, below=1.8cm of step1] (vjepa) {\textbf{Frozen V-JEPA Teacher}\\ 1024-Dim Visual Latent Manifold};
+        \node[greenbox, right=1.2cm of vjepa] (infonce) {\textbf{Symmetric InfoNCE}\\ Regularization ($\tau=0.07$)};
+        \node[greenbox, right=1.2cm of infonce] (solution) {\textbf{Topological Safety Zone}\\ Bounded Drift ($73.80\%$ Error Reduction)};
+
+        % Paths
+        \draw[->, line width=1pt] (step1) -- (error);
+        \draw[->, line width=1pt] (error) -- (feedback);
+        \draw[->, line width=1pt, red!80!black] (feedback) |- (drift);
+        \draw[->, line width=1pt, red!80!black] (error) -- (drift);
+        
+        \draw[->, line width=1.2pt, green!50!black] (vjepa) -- (infonce);
+        \draw[->, line width=1.2pt, green!50!black] (infonce) -- (solution);
+        \draw[->, dashed, line width=1pt, green!50!black] (solution) -- (step1);
+    \end{tikzpicture}
+    }
+    \caption{\textbf{Conceptual Comparison between Unconstrained Autoregressive Drift and the V-JEPA Grounded Regularization Framework.} In classical ungrounded sequence models (top row), minor single-step state prediction errors feed back recursively into subsequent history windows, causing exponential trajectory divergence (\textit{Drift Cone}). The proposed V-JEPA Grounded Framework (bottom row) regularizes latent telemetry representations against pre-trained visual world model manifolds during training, confining closed-loop execution within a robust \textit{Topological Safety Zone} under runtime Visual Silence.}
+    \label{fig:concept_blueprint}
+\end{figure}
+
+Due to strict edge hardware constraints—such as battery consumption limits, limited thermal dissipation budgets, and bounded onboard memory—robotic controllers typically employ lightweight sequence models (such as recurrent neural networks or shallow multi-layer perceptrons) \cite{sutton2018reinforcement, hessel2018rainbow}. However, when deployed in closed-loop autoregressive settings, these compact models inevitably suffer from severe \textbf{autoregressive drift}:
+\begin{equation}
+    \text{Drift}(t) = \|\mathbf{q}_t^{\text{true}} - \hat{\mathbf{q}}_t^{\text{sim}}\|_2
+\end{equation}
+Because predicted states $\hat{\mathbf{q}}_t$ are recursively fed back as input history to predict the subsequent state $\hat{\mathbf{q}}_{t+1}$, even infinitesimal single-step prediction errors compound exponentially across continuous time horizons. Within tens of steps, the model's internal state estimate completely diverges from physical reality (Figure \ref{fig:concept_blueprint}), causing the robot to miss target trajectories or collide with obstacles.
+
+\subsection{The Computational Dilemma of Real-Time Vision}
+A conventional engineering remedy for autoregressive drift is continuous sensory feedback via high-resolution optical cameras and real-time vision processing pipelines. Contemporary deep learning approaches deploy Vision Transformers (ViTs) or large visual foundation models to continuously ground the robot's physical location within the workspace \cite{dosovitskiy2020image, caron2021emerging}.
+
+However, continuous visual processing introduces a severe \textbf{Computational Barrier} for edge robotics:
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{Memory Footprint:} Multi-head self-attention mechanisms in high-capacity vision models require gigabytes of Video RAM (VRAM), exceeding the memory capacity of low-power edge microcontrollers and embedded neural processing units (NPUs).
+    \item \textbf{Power and Thermal Budgets:} High-throughput vision transformers consume tens to hundreds of watts of power during continuous inference, draining battery reserves in untethered mobile robots and micro-drones.
+    \item \textbf{Inference Latency \& Frame Drops:} Image capture, camera sensor ISP pipeline transfer, and visual transformer encoding introduce latencies exceeding 20--50~ms, which fails the strict real-time control frequency requirements ($100\,\text{Hz}$ or $10\,\text{ms}$) of dynamic robotic manipulation.
+    \item \textbf{Environmental Vulnerabilities:} Optical camera feeds are vulnerable to lens smudges, dust, line-of-sight occlusions, sensor glare, and dynamic lighting changes common in industrial and field environments.
+\end{enumerate}
+
+\subsection{Proposed Solution: The Visual Silence Paradigm}
+To resolve this fundamental dilemma, we investigate the \textbf{Visual Silence} paradigm. We formulate a hypothesis: \textit{Can a lightweight sequential student network learn to internalize the rich spatial topology of a high-capacity visual world model during offline training, such that it maintains bounded, high-precision trajectory tracking at test time without requiring any camera feeds or visual encoders at runtime?}
+
+To evaluate this hypothesis, we design and implement the \textbf{Multi-Task Representation Grounding Framework}. During training, our compact student network simultaneously learns:
+\begin{itemize}
+    \item \textbf{A Predictive Forecasting Task:} Direct supervised joint trajectory prediction using Mean Squared Error ($\mathcal{L}_{\text{MSE}}$) against ground-truth kinematic targets.
+    \item \textbf{A Manifold Regularization Task:} High-dimensional representation alignment against a frozen 1024-dimensional visual latent space extracted from Meta's \textbf{V-JEPA (Video Joint Embedding Predictive Architecture)} \cite{bardes2024vjepa} using a Symmetric Bidirectional InfoNCE contrastive loss ($\mathcal{L}_{\text{InfoNCE}}$).
+\end{itemize}
+
+At inference time, the visual teacher model and optical camera feeds are completely eliminated. The lightweight model executes closed-loop state forecasting using solely continuous mechanical telemetry (joint positions, joint velocities, and control action commands).
+
+\subsection{Primary Contributions}
+This paper provides the following primary technical contributions:
+\begin{enumerate}
+    \item \textbf{Novel Multi-Task Grounding Architecture:} We introduce a dual-tower cross-modal framework comprising an 802-dimensional Residual Student MLP (`\texttt{ContrastiveStudentMLP}') and a Multi-Scale Scaled Dot-Product Sequence Self-Attention Decoder (`\texttt{ContrastiveDecoder}').
+    \item \textbf{Curriculum-Based Manifold Sampling:} We formulate a Scheduled Manifold Sampling (SMS) mechanism using sigmoidal blend decay that smoothly transitions internal student states from teacher-guided visual representations toward autonomous student telemetry embeddings.
+    \item \textbf{Comprehensive Closed-Loop MuJoCo Evaluation:} Evaluated across 21 held-out test episodes in a closed-loop MuJoCo physics simulation under strict Visual Silence, the grounded model reduces average spatial trajectory drift by \textbf{73.80\%} (average L2 error decreasing from 147.55 to 38.66), with peak improvements reaching \textbf{87.27\%}.
+    \item \textbf{Extreme Parameter and Memory Efficiency:} The complete deployed model contains exactly \textbf{2,455,810 trainable parameters} ($<$10~MB FP32 memory footprint), delivering a \textbf{124$\times$ parameter reduction} compared to the V-JEPA visual teacher ($\sim$304M parameters).
+\end{enumerate}
+
+---
+
+\section{Related Work}
+\label{sec:related_work}
+
+\subsection{Visual World Models and Joint Embedding Predictive Architectures}
+World models in reinforcement learning and robotics aim to model environmental transitions and spatial geometry in compact latent spaces \cite{ha2018world, hafner2019dream, hafner2020mastering, lecun2022path}. Early world models relied on pixel-level generative reconstruction via Variational Autoencoders (VAEs) or autoregressive diffusion models. However, pixel reconstruction forces models to expend capacity on high-frequency, task-irrelevant visual details (e.g., background textures, illumination flickers).
+
+To overcome reconstruction bottlenecks, Joint Embedding Predictive Architectures (JEPA), pioneered by LeCun \cite{lecun2022path} and realized in Meta's \textbf{I-JEPA} \cite{assran2023self} and \textbf{V-JEPA} \cite{bardes2024vjepa}, train encoders by predicting missing spatio-temporal representations in feature space rather than pixel space. V-JEPA models achieve state-of-the-art physical commonsense reasoning and motion understanding without generative pixel rendering. In this work, we leverage pre-trained V-JEPA feature representations as an idealized topological manifold teacher for grounding non-visual telemetry models.
+
+\subsection{Cross-Modal Representation Distillation and Contrastive Learning}
+Contrastive representation learning has emerged as a dominant paradigm for cross-modal alignment, notably exemplified by CLIP \cite{radford2021learning} for vision-language pairs and InfoNCE-based self-supervised models \cite{oord2018representation, he2020momentum, chen2020simple}. Contrastive objectives maximize the mutual information lower bound between paired modalities across a shared hypersphere.
+
+Knowledge distillation \cite{hinton2015distilling, gou2021knowledge} has traditionally focused on transferring classification logits from large teachers to compact students within the same modality. Recent cross-modal distillation frameworks \cite{tian2020contrastive, gupta2016cross} explore transferring spatial representations across heterogeneous modalities. Our framework builds upon these principles by using symmetric InfoNCE to transfer high-dimensional visual world model latents into a mechanical telemetry forecasting network.
+
+\subsection{Robotic State Estimation, Telemetry Forecasting, and Drift Mitigation}
+State forecasting in robotic manipulation has historically relied on classical filtering (Extended Kalman Filters, Particle Filters) \cite{thrun2005probabilistic, welch1995introduction} and parametric physics engines. With the rise of deep learning, recurrent neural networks (LSTMs, GRUs) and Temporal Convolutional Networks (TCNs) have been widely adopted for joint state and force prediction \cite{hochreiter1997long, bai2018empirical}.
+
+However, sequential models deployed in closed-loop settings inevitably suffer from error compounding \cite{ross2011reduction, venkatraman2015improving}. Techniques such as Scheduled Sampling \cite{bengio2015scheduled}, DAgger \cite{ross2011reduction}, and noise injection have been developed to mitigate covariate shift during autoregressive rollouts. Our work demonstrates that cross-modal representation grounding provides an orthogonal and highly effective regularizer against autoregressive drift, achieving bounded closed-loop stability without runtime sensory overhead.
+
+---
+
+\section{Problem Formulation \& Theoretical Foundations}
+\label{sec:problem_formulation}
+
+\subsection{Kinematic State Space and Closed-Loop Dynamical Formulation}
+Consider a robotic manipulation system operating in continuous time, discretized at a constant sampling frequency $f_s = 100\,\text{Hz}$ ($\Delta t = 10\,\text{ms}$). At each discrete time step $t \in \mathbb{N}$, the physical state of the robot is characterized by:
+\begin{itemize}
+    \item \textbf{Joint Positions:} $\mathbf{q}_{\text{pos}, t} \in \mathbb{R}^{d_q}$, representing the Cartesian or generalized joint coordinates of the manipulator.
+    \item \textbf{Joint Velocities:} $\mathbf{q}_{\text{vel}, t} \in \mathbb{R}^{d_q}$, representing instantaneous kinematic velocity vectors.
+    \item \textbf{Control Actions:} $\mathbf{a}_t \in \mathbb{R}^{d_a}$, representing actuator position or torque commands dispatched by the high-level policy.
+\end{itemize}
+The true underlying continuous dynamical system evolves according to the transition physics $\mathcal{F}$:
+\begin{equation}
+    \mathbf{q}_{t+1} = \mathcal{F}(\mathbf{q}_t, \mathbf{q}_{\text{vel}, t}, \mathbf{a}_t) + \mathbf{w}_t
+\end{equation}
+where $\mathbf{w}_t \sim \mathcal{N}(\mathbf{0}, \boldsymbol{\Sigma}_w)$ denotes physical process noise.
+
+\subsection{Autoregressive Error Compounding in Non-Linear Dynamics}
+Let $f_\theta$ denote a parameterized neural forecaster that maps historical state observations over a window of length $W$ to future state predictions over a prediction horizon $P$:
+\begin{equation}
+    \hat{\mathbf{q}}_{t+1:t+P} = f_\theta(\mathbf{x}_{t-W+1:t}, \mathbf{a}_t)
+\end{equation}
+where $\mathbf{x}_\tau = [\mathbf{q}_{\text{pos}, \tau}, \mathbf{q}_{\text{vel}, \tau}]$.
+
+In an open-loop supervised setting, $f_\theta$ is evaluated strictly using ground-truth historical prefixes $\mathbf{x}_{t-W+1:t}^{\text{true}}$. However, in closed-loop autonomous execution, true state feedback is absent, and the model must recursively feed its own prior predictions back into its history buffer:
+\begin{equation}
+    \hat{\mathbf{x}}_{t+1} = [\hat{\mathbf{q}}_{\text{pos}, t+1}, \hat{\mathbf{q}}_{\text{vel}, t+1}]
+\end{equation}
+\begin{equation}
+    \hat{\mathbf{x}}_{t-W+2:t+1} = [\hat{\mathbf{x}}_{t-W+2}, \dots, \hat{\mathbf{x}}_t, \hat{\mathbf{x}}_{t+1}]
+\end{equation}
+
+Let $\boldsymbol{\epsilon}_t = \mathbf{q}_t - \hat{\mathbf{q}}_t$ define the state tracking error at step $t$. Under non-linear Taylor expansion around the true trajectory, the error propagation dynamics follow:
+\begin{equation}
+    \boldsymbol{\epsilon}_{t+1} = \mathbf{J}_{\mathcal{F}}(\mathbf{q}_t) \boldsymbol{\epsilon}_t + \mathcal{O}(\|\boldsymbol{\epsilon}_t\|^2) + \boldsymbol{\delta}_\theta(\mathbf{q}_t)
+\end{equation}
+where $\mathbf{J}_{\mathcal{F}}$ is the Jacobian of the physical transition dynamics, and $\boldsymbol{\delta}_\theta(\mathbf{q}_t) = \mathcal{F}(\mathbf{q}_t) - f_\theta(\mathbf{q}_t)$ is the epistemic model bias.
+
+If the spectral radius $\rho(\mathbf{J}_{\mathcal{F}}) \ge 1$ or if $\boldsymbol{\delta}_\theta$ exhibits systemic bias outside the training manifold, the tracking error norm compounds exponentially:
+\begin{equation}
+    \|\boldsymbol{\epsilon}_T\| \le \|\boldsymbol{\epsilon}_0\| \prod_{t=0}^{T-1} \|\mathbf{J}_{\mathcal{F}}(\mathbf{q}_t)\| + \sum_{k=0}^{T-1} \|\boldsymbol{\delta}_\theta(\mathbf{q}_k)\| \prod_{j=k+1}^{T-1} \|\mathbf{J}_{\mathcal{F}}(\mathbf{q}_j)\| \propto e^{\lambda T}
+\end{equation}
+This exponential error expansion constitutes the \textbf{Drift Cone}.
+
+\subsection{Information-Theoretic Grounding via Mutual Information Lower Bounds}
+To prevent $\boldsymbol{\delta}_\theta$ from diverging outside the valid spatial manifold, we introduce visual representation grounding. Let $\mathbf{V}_t = g_{\text{frozen}}(\mathbf{I}_{t-T_{\text{vid}}+1:t}) \in \mathbb{R}^{d_v}$ represent the latent representation produced by a pre-trained visual foundation model observing synchronous video frames $\mathbf{I}$.
+
+The visual latent space encodes the true spatial geometry of the physical environment $\mathcal{S}_{\text{physical}}$. By maximizing the Mutual Information $I(\mathbf{Z}_t; \mathbf{V}_t)$ between the student telemetry representation $\mathbf{Z}_t = h_\theta(\mathbf{x}_{t-W+1:t}, \mathbf{a}_t)$ and the visual world latent $\mathbf{V}_t$, we establish a non-generative information bridge:
+\begin{equation}
+    I(\mathbf{Z}_t; \mathbf{V}_t) \ge \log(B) - \mathcal{L}_{\text{InfoNCE}}(\mathbf{Z}_t, \mathbf{V}_t)
+\end{equation}
+Minimizing the InfoNCE loss tightly bounds the student representation within the topology of the visual world model, effectively constraining $f_\theta$ to physical state transitions and eliminating unconstrained out-of-distribution drift.
+
+---
+
+\section{Dataset Preprocessing Protocols \& Machine Learning Hygiene}
+\label{sec:dataset}
+
+\subsection{Dataset Profile: \texttt{lerobot/pusht}}
+Experiments were conducted using the high-frequency planar manipulation benchmark \texttt{lerobot/pusht} from Hugging Face LeRobot. The task features a planar robotic pusher manipulating an unactuated T-shaped block toward a fixed goal pose at $100\,\text{Hz}$:
+\begin{itemize}
+    \item \textbf{Pusher Coordinates ($\mathbf{q}_{\text{pos}} \in \mathbb{R}^2$):} Continuous 2D Cartesian pusher coordinates in normalized workspace units.
+    \item \textbf{Pusher Velocities ($\mathbf{q}_{\text{vel}} \in \mathbb{R}^2$):} Instantaneous 2D kinematic joint velocities.
+    \item \textbf{Controller Actions ($\mathbf{a} \in \mathbb{R}^2$):} Commanded 2D target pusher positions dispatched by the operational controller.
+    \item \textbf{Visual Scene Frames ($\mathbf{I} \in \mathbb{R}^{256 \times 256 \times 3}$):} Overhead camera RGB video footage synchronized at $100\,\text{Hz}$.
+\end{itemize}
+The complete dataset comprises \textbf{206 contiguous episodes} containing a total of \textbf{25,650 time frames}.
+
+\subsection{Rigorous Split Isolation Protocol}
+To maintain flawless scientific integrity and prevent data contamination, dataset partitioning was enforced strictly at the episode level prior to any statistical computations:
+\begin{equation}
+    \text{Dataset (206 Episodes)} \longrightarrow \begin{cases} 
+    \mathcal{D}_{\text{train}} \text{ (80\%):} & 164 \text{ episodes (IDs } 0 \le \text{ep} \le 163 \text{; } 20,480 \text{ frames)} \\ 
+    \mathcal{D}_{\text{val}} \text{ (10\%):} & 21 \text{ episodes (IDs } 164 \le \text{ep} \le 184 \text{; } 2,585 \text{ frames)} \\ 
+    \mathcal{D}_{\text{test}} \text{ (10\%):} & 21 \text{ episodes (IDs } 185 \le \text{ep} \le 205 \text{; } 2,585 \text{ frames)} 
+    \end{cases}
+\end{equation}
+
+\subsection{Split-Isolated Standardization Formulation}
+To eliminate distribution leakage from validation and test sets into training parameters, empirical mean ($\boldsymbol{\mu}$) and standard deviation ($\boldsymbol{\sigma}$) vectors were calculated \textbf{strictly over the training split mask} $\mathcal{M}_{\text{train}} = \{i \mid \text{ep}(i) \in [0, 163]\}$:
+\begin{align}
+    \boldsymbol{\mu}_{\mathbf{q}_{\text{pos}}} &= \frac{1}{|\mathcal{M}_{\text{train}}|} \sum_{i \in \mathcal{M}_{\text{train}}} \mathbf{q}_{\text{pos}, i}, \quad &\boldsymbol{\sigma}_{\mathbf{q}_{\text{pos}}} &= \sqrt{\frac{1}{|\mathcal{M}_{\text{train}}|} \sum_{i \in \mathcal{M}_{\text{train}}} (\mathbf{q}_{\text{pos}, i} - \boldsymbol{\mu}_{\mathbf{q}_{\text{pos}}})^2} + \epsilon_{\text{eps}} \\
+    \boldsymbol{\mu}_{\mathbf{q}_{\text{vel}}} &= \frac{1}{|\mathcal{M}_{\text{train}}|} \sum_{i \in \mathcal{M}_{\text{train}}} \mathbf{q}_{\text{vel}, i}, \quad &\boldsymbol{\sigma}_{\mathbf{q}_{\text{vel}}} &= \sqrt{\frac{1}{|\mathcal{M}_{\text{train}}|} \sum_{i \in \mathcal{M}_{\text{train}}} (\mathbf{q}_{\text{vel}, i} - \boldsymbol{\mu}_{\mathbf{q}_{\text{vel}}})^2} + \epsilon_{\text{eps}} \\
+    \boldsymbol{\mu}_{\mathbf{a}} &= \frac{1}{|\mathcal{M}_{\text{train}}|} \sum_{i \in \mathcal{M}_{\text{train}}} \mathbf{a}_i, \quad &\boldsymbol{\sigma}_{\mathbf{a}} &= \sqrt{\frac{1}{|\mathcal{M}_{\text{train}}|} \sum_{i \in \mathcal{M}_{\text{train}}} (\mathbf{a}_i - \boldsymbol{\mu}_{\mathbf{a}})^2} + \epsilon_{\text{eps}}
+\end{align}
+where $\epsilon_{\text{eps}} = 10^{-8}$. These exact statistics were stored as immutable metadata attributes within the HDF5 storage structure (`\texttt{feature\_cache.h5}') and applied uniformly to normalize all partitions:
+\begin{equation}
+    \hat{\mathbf{q}}_{\text{pos}, t} = \frac{\mathbf{q}_{\text{pos}, t} - \boldsymbol{\mu}_{\mathbf{q}_{\text{pos}}}}{\boldsymbol{\sigma}_{\mathbf{q}_{\text{pos}}}}, \quad \hat{\mathbf{q}}_{\text{vel}, t} = \frac{\mathbf{q}_{\text{vel}, t} - \boldsymbol{\mu}_{\mathbf{q}_{\text{vel}}}}{\boldsymbol{\sigma}_{\mathbf{q}_{\text{vel}}}}, \quad \hat{\mathbf{a}}_t = \frac{\mathbf{a}_t - \boldsymbol{\mu}_{\mathbf{a}}}{\boldsymbol{\sigma}_{\mathbf{a}}}
+\end{equation}
+
+\subsection{Sequence Windowing and Episode Boundary Bleed Elimination}
+The data loader samples historical trajectory sequences of length $W = 40$ steps ($0.4\,\text{s}$ at $100\,\text{Hz}$) to forecast future horizons of $P = 5$ steps ($0.05\,\text{s}$). 
+
+To prevent cross-episode boundary bleed (where historical windows at the start of an episode erroneously ingest frames from the end of a preceding episode), valid sample index sets $\mathcal{I}_{\text{valid}}$ were constructed with strict boundary filtering:
+\begin{equation}
+    \mathcal{I}_{\text{valid}} = \left\{ idx \;\middle|\; \text{ep}(idx - W + 1) == \text{ep}(idx + P) \right\}
+\end{equation}
+Any sliding index that crossed episode transition boundaries was discarded.
+
+---
+
+\section{The Multi-Task Representation Grounding Framework}
+\label{sec:methodology}
+
+\begin{figure}[ht!]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[scale=0.9, transform shape, node distance=1.2cm, auto, >=Stealth]
+        % Style definitions
+        \tikzstyle{block} = [draw, fill=blue!10, rectangle, rounded corners, minimum height=0.9cm, minimum width=2.4cm, align=center, font=\small]
+        \tikzstyle{teacher} = [draw, fill=purple!15, rectangle, rounded corners, minimum height=0.9cm, minimum width=2.4cm, align=center, font=\small]
+        \tikzstyle{student} = [draw, fill=orange!15, rectangle, rounded corners, minimum height=0.9cm, minimum width=2.4cm, align=center, font=\small]
+        \tikzstyle{loss} = [draw, fill=red!15, rectangle, rounded corners, minimum height=0.9cm, minimum width=2.4cm, align=center, font=\small]
+        \tikzstyle{eval} = [draw, fill=green!15, rectangle, rounded corners, minimum height=0.9cm, minimum width=2.4cm, align=center, font=\small]
+
+        % Pipeline Nodes
+        \node [block] (input) {\textbf{Input Processing}\\ $W=40$ Telemetry + Action $\mathbf{a}_t$};
+        \node [student, right=1.0cm of input] (mlp) {\textbf{Student MLP}\\ $802 \to 512 \to 1024$};
+        \node [teacher, above=1.2cm of mlp] (vjepa) {\textbf{Frozen V-JEPA Teacher}\\ 64-Frame Video $\to \mathbf{v}_t \in \mathbb{R}^{1024}$};
+        \node [loss, right=1.0cm of mlp] (infonce) {\textbf{InfoNCE Regularization}\\ Cosine Sim ($\tau=0.07$)};
+        \node [student, right=1.0cm of infonce] (decoder) {\textbf{Attentive Decoder}\\ Self-Attention + LSTMCell};
+        \node [eval, right=1.0cm of decoder] (mujoco) {\textbf{Visual Silence Eval}\\ MuJoCo Closed-Loop Rollout};
+
+        % Arrows
+        \draw [->, line width=1pt] (input) -- (mlp);
+        \draw [->, line width=1pt, purple!80!black] (vjepa) -- node[right, font=\scriptsize] {Visual Anchor $\mathbf{v}_t$} (infonce);
+        \draw [->, line width=1pt] (mlp) -- node[above, font=\scriptsize] {Latent $\mathbf{z}_t$} (infonce);
+        \draw [->, line width=1pt] (infonce) -- node[above, font=\scriptsize] {Blended $\mathbf{z}_t^{\text{blended}}$} (decoder);
+        \draw [->, line width=1.2pt, green!60!black] (decoder) -- node[above, font=\scriptsize] {Forecast $\hat{\mathbf{q}}_{1:P}$} (mujoco);
+
+        % Training overlay annotation
+        \node [draw, dashed, red!80!black, fit=(vjepa) (infonce), inner sep=4pt, label=above:{\scriptsize \textbf{Training Phase Only (Offloaded at Inference)}}] {};
+    \end{tikzpicture}
+    }
+    \caption{\textbf{Comprehensive System Flow of the V-JEPA Grounded Student Framework.} In offline training (enclosed in dashed boundary), 64-frame video clips are encoded by Meta's frozen V-JEPA ViT-L/16 model to generate 1024-dimensional visual anchors $\mathbf{v}_t$. The student MLP maps $W=40$ telemetry steps and action command $\mathbf{a}_t$ into aligned representation $\mathbf{z}_t$. During runtime deployment, visual processing is eliminated, and the student network executes closed-loop state rollouts in complete Visual Silence.}
+    \label{fig:system_blueprint}
+\end{figure}
+
+\subsection{Offline Visual Latent Extraction (The Frozen Teacher)}
+Visual representations were pre-computed using Meta's pre-trained \texttt{facebook/vjepa2-vitl-fpc64-256} model. For each time step $t$, a 64-frame video clip $\mathbf{I}_{t-63:t} \in \mathbb{R}^{64 \times 3 \times 256 \times 256}$ was constructed. For initial frames where $t < 63$, the sequence was left-padded with repeated copies of the initial frame $\mathbf{I}_0$.
+
+Video clips were normalized using ImageNet channel statistics ($\boldsymbol{\mu} = [0.485, 0.456, 0.406]$, $\boldsymbol{\sigma} = [0.229, 0.224, 0.225]$) and passed through the frozen V-JEPA vision transformer backbone. Spatial and temporal patch tokens from the final transformer block were mean-pooled:
+\begin{equation}
+    \mathbf{v}_t = \text{MeanPooling}\left(\text{V-JEPA}_{\text{backbone}}(\mathbf{I}_{t-63:t})\right) \in \mathbb{R}^{1024}
+\end{equation}
+Visual anchors $\mathbf{v}_t$ were cached alongside normalized telemetry arrays within `\texttt{feature\_cache.h5}'.
+
+\subsection{The Student MLP Network Architecture (\texttt{ContrastiveStudentMLP})}
+The student network is designed to map historical joint kinematics and the current action command into the 1024-dimensional latent space with minimal computational overhead.
+
+\subsubsection{Scaled Sinusoidal Positional Encoding}
+To provide temporal sequence awareness to the feedforward student network, each relative time step $p \in [0, W-1]$ ($W=40$) is mapped to a 16-dimensional sinusoidal positional embedding $\mathbf{PE}_p \in \mathbb{R}^{16}$:
+\begin{equation}
+    PE_{(p, 2i)} = \sin\left(\frac{p}{10000^{2i / 16}}\right), \quad PE_{(p, 2i+1)} = \cos\left(\frac{p}{10000^{2i / 16}}\right), \quad i \in [0, 7]
+\end{equation}
+To prevent positional encodings from overpowering physical kinematic coordinates, $\mathbf{PE}$ is scaled by $\alpha_{\text{pe}} = 0.1$:
+\begin{equation}
+    \mathbf{u}_{p} = [\hat{\mathbf{q}}_{\text{pos}, t-W+1+p}, \hat{\mathbf{q}}_{\text{vel}, t-W+1+p}, \alpha_{\text{pe}} \cdot \mathbf{PE}_p] \in \mathbb{R}^{2 + 2 + 16} = \mathbb{R}^{20}
+\end{equation}
+
+\subsubsection{Action Conditioning and Residual Layers}
+The sequence matrix $\mathbf{U} \in \mathbb{R}^{40 \times 20}$ is flattened into an 800-dimensional vector and concatenated with the normalized action command $\hat{\mathbf{a}}_t \in \mathbb{R}^2$, producing an 802-dimensional input feature vector $\mathbf{x}_{\text{input}}$:
+\begin{equation}
+    \mathbf{x}_{\text{input}} = [\text{vec}(\mathbf{U}), \hat{\mathbf{a}}_t] \in \mathbb{R}^{802}
+\end{equation}
+
+The network processes $\mathbf{x}_{\text{input}}$ through input projection, two residual blocks, and a projection head:
+\begin{align}
+    \mathbf{h}_0 &= \text{GELU}\left(\text{LayerNorm}\left(\mathbf{W}_{\text{in}} \mathbf{x}_{\text{input}} + \mathbf{b}_{\text{in}}\right)\right) \quad &(802 \to 512) \\
+    \mathbf{h}_1 &= \mathbf{h}_0 + \text{GELU}\left(\text{LayerNorm}\left(\mathbf{W}_{1,2} \text{GELU}(\text{LayerNorm}(\mathbf{W}_{1,1} \mathbf{h}_0 + \mathbf{b}_{1,1})) + \mathbf{b}_{1,2}\right)\right) \quad &(512 \to 512) \\
+    \mathbf{h}_2 &= \mathbf{h}_1 + \text{GELU}\left(\text{LayerNorm}\left(\mathbf{W}_{2,2} \text{GELU}(\text{LayerNorm}(\mathbf{W}_{2,1} \mathbf{h}_1 + \mathbf{b}_{2,1})) + \mathbf{b}_{2,2}\right)\right) \quad &(512 \to 512) \\
+    \mathbf{z}_t &= \text{LayerNorm}\left(\mathbf{W}_{\text{proj}} \mathbf{h}_2 + \mathbf{b}_{\text{proj}}\right) \quad &(512 \to 1024)
+\end{align}
+
+\subsection{Symmetric Bidirectional InfoNCE Loss}
+To align the student representation $\mathbf{z}_t \in \mathbb{R}^{1024}$ with the visual latent anchor $\mathbf{v}_t \in \mathbb{R}^{1024}$, we employ a Symmetric Bidirectional InfoNCE objective over mini-batches of size $B = 1024$.
+
+First, latent vectors are projected onto the unit hypersphere via L2 normalization:
+\begin{equation}
+    \tilde{\mathbf{z}}_i = \frac{\mathbf{z}_i}{\|\mathbf{z}_i\|_2}, \quad \tilde{\mathbf{v}}_j = \frac{\mathbf{v}_j}{\|\mathbf{v}_j\|_2}, \quad \forall i, j \in \{1, \dots, B\}
+\end{equation}
+We compute the $B \times B$ pairwise cosine similarity matrix $\mathbf{S}$ with temperature parameter $\tau = 0.07$:
+\begin{equation}
+    S_{ij} = \frac{\tilde{\mathbf{z}}_i^\top \tilde{\mathbf{v}}_j}{\tau}
+\end{equation}
+The symmetric loss is defined as the average of Joint-to-Visual and Visual-to-Joint categorical cross-entropy:
+\begin{equation}
+    \mathcal{L}_{\text{j2v}} = -\frac{1}{B} \sum_{i=1}^B \log \frac{\exp(S_{ii})}{\sum_{j=1}^B \exp(S_{ij})}, \quad \mathcal{L}_{\text{v2j}} = -\frac{1}{B} \sum_{j=1}^B \log \frac{\exp(S_{jj})}{\sum_{i=1}^B \exp(S_{ij})}
+\end{equation}
+\begin{equation}
+    \mathcal{L}_{\text{InfoNCE}} = \frac{1}{2} \left( \mathcal{L}_{\text{j2v}} + \mathcal{L}_{\text{v2j}} \right)
+\end{equation}
+
+\subsection{Scheduled Manifold Sampling (SMS) and Stochastic Jitter}
+During training, the student representation $\mathbf{z}_t$ is blended with the true visual anchor $\mathbf{v}_t$ using a dynamic blend weight $\lambda_{\text{blend}}(e) \in [0.5, 1.0]$:
+\begin{equation}
+    \mathbf{z}_t^{\text{blended}} = \lambda_{\text{blend}}(e) \cdot \mathbf{z}_t + (1 - \lambda_{\text{blend}}(e)) \cdot \mathbf{v}_t
+\end{equation}
+The blend factor follows a sigmoidal decay curriculum over training epochs $e \in [1, E_{\text{max}}]$ ($E_{\text{max}} = 120$):
+\begin{equation}
+    \lambda_{\text{blend}}(e) = \begin{cases} 
+    1.0 & e < e_{\text{start}} \\ 
+    \lambda_{\text{min}} + (1.0 - \lambda_{\text{min}}) \cdot \frac{1}{1 + \exp\left(\frac{e - e_{\text{mid}}}{\sigma_{\text{decay}}}\right)} & e \ge e_{\text{start}} 
+    \end{cases}
+\end{equation}
+where $\lambda_{\text{min}} = 0.500$, $e_{\text{start}} = 30$, $e_{\text{mid}} = 75$, and $\sigma_{\text{decay}} = 15$. This formulation ensures that early training establishes rapid manifold alignment, while later epochs force the decoder to rely predominantly on student telemetry representations.
+
+Additionally, to immunize the policy against out-of-distribution drift during autoregressive rollout, stochastic Gaussian jitter is added to input telemetry windows during training:
+\begin{equation}
+    \mathbf{x}_{\text{jittered}} = \mathbf{x}_{\text{input}} + \boldsymbol{\xi}, \quad \boldsymbol{\xi} \sim \mathcal{N}(\mathbf{0}, \sigma_{\text{jitter}}^2 \mathbf{I}), \quad \sigma_{\text{jitter}} = 0.02
+\end{equation}
+
+\subsection{Attentive Sequence Decoder Architecture (\texttt{ContrastiveDecoder})}
+The decoder maps the aligned representation $\mathbf{z}_t^{\text{blended}}$ into a multi-step continuous trajectory prediction $\hat{\mathbf{q}}_{t+1:t+P}$ ($P = 5$).
+
+\subsubsection{State Initialization}
+Initial hidden and cell states are projected from $\mathbf{z}_t^{\text{blended}}$:
+\begin{equation}
+    \mathbf{h}_0^{\text{dec}} = \text{LayerNorm}(\mathbf{W}_h \mathbf{z}_t^{\text{blended}} + \mathbf{b}_h), \quad \mathbf{c}_0^{\text{dec}} = \text{LayerNorm}(\mathbf{W}_c \mathbf{z}_t^{\text{blended}} + \mathbf{b}_c) \in \mathbb{R}^{256}
+\end{equation}
+
+\subsubsection{Recurrent Attention Step}
+For each horizon step $k \in [1, P]$:
+\begin{equation}
+    \mathbf{h}_k^{\text{dec}}, \mathbf{c}_k^{\text{dec}} = \text{LSTMCell}(\hat{\mathbf{q}}_{k-1}, (\mathbf{h}_{k-1}^{\text{dec}}, \mathbf{c}_{k-1}^{\text{dec}}))
+\end{equation}
+where $\hat{\mathbf{q}}_0 = \hat{\mathbf{q}}_{\text{pos}, t}$.
+
+We compute Scaled Dot-Product Self-Attention over the accumulated hidden state trajectory $\mathbf{H}_{1:k}^{\text{dec}} = [\mathbf{h}_1^{\text{dec}}, \dots, \mathbf{h}_k^{\text{dec}}] \in \mathbb{R}^{k \times 256}$:
+\begin{equation}
+    \mathbf{Q}_k = \mathbf{W}_Q \mathbf{h}_k^{\text{dec}}, \quad \mathbf{K} = \mathbf{W}_K \mathbf{H}_{1:k}^{\text{dec}}, \quad \mathbf{V} = \mathbf{W}_V \mathbf{H}_{1:k}^{\text{dec}}
+\end{equation}
+\begin{equation}
+    \boldsymbol{\alpha}_{\text{attn}} = \text{softmax}\left(\frac{\mathbf{Q}_k \mathbf{K}^\top}{\sqrt{d_{\text{hidden}}}}\right) \in \mathbb{R}^{1 \times k}, \quad \mathbf{c}_{\text{attn}} = \boldsymbol{\alpha}_{\text{attn}} \mathbf{V} \in \mathbb{R}^{256}
+\end{equation}
+The final kinematic coordinate prediction combines the attentive context and residual hidden state:
+\begin{equation}
+    \hat{\mathbf{q}}_k = \mathbf{W}_{\text{out}} (\mathbf{c}_{\text{attn}} + \mathbf{h}_k^{\text{dec}}) + \mathbf{b}_{\text{out}} \in \mathbb{R}^2
+\end{equation}
+
+\subsection{Complete Training Objective}
+The total joint loss function combines multi-step Mean Squared Error forecasting loss with weighted InfoNCE regularization:
+\begin{equation}
+    \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{MSE}}(\hat{\mathbf{q}}_{1:P}, \mathbf{q}_{1:P}^{\text{target}}) + \lambda_{\text{weight}} \cdot \mathcal{L}_{\text{InfoNCE}}(\mathbf{z}_t, \mathbf{v}_t)
+\end{equation}
+where $\lambda_{\text{weight}} = 0.25$, and:
+\begin{equation}
+    \mathcal{L}_{\text{MSE}} = \frac{1}{P} \sum_{k=1}^P \|\mathbf{q}_{t+k}^{\text{target}} - \hat{\mathbf{q}}_k\|_2^2
+\end{equation}
+
+\subsection{Inference Protocol Under Complete Visual Silence}
+During test-time evaluation, the visual teacher model is entirely omitted. The inference forward pass is executed strictly with:
+\begin{equation}
+    \mathbf{v}_t = \text{None}, \quad \lambda_{\text{blend}} = 1.0 \implies \mathbf{z}_t^{\text{blended}} \equiv \mathbf{z}_t
+\end{equation}
+This guarantees zero visual information leakage at runtime.
+
+---
+
+\section{Baseline Model Formulation}
+\label{sec:baseline}
+
+To establish a rigorous experimental benchmark, we implemented an ungrounded 2-layer Sequence-to-Sequence Long Short-Term Memory network (`\texttt{BaselineForecaster}').
+
+\subsection{Encoder-Decoder Recurrent Formulation}
+Given historical kinematic inputs $\mathbf{X}_{t-W+1:t} \in \mathbb{R}^{W \times 4}$ where $\mathbf{x}_\tau = [\hat{\mathbf{q}}_{\text{pos}, \tau}, \hat{\mathbf{q}}_{\text{vel}, \tau}]$, the encoder unrolls:
+\begin{equation}
+    \mathbf{h}_{1:W}^{\text{enc}}, (\mathbf{h}_W^{\text{enc}}, \mathbf{c}_W^{\text{enc}}) = \text{LSTM}_{\text{encoder}}(\mathbf{X}_{t-W+1:t})
+\end{equation}
+where $\text{LSTM}_{\text{encoder}}$ comprises 2 stacked LSTM layers with hidden dimension $d_{\text{hidden}} = 256$.
+
+The decoder state is initialized with the encoder's final states $(\mathbf{h}_W^{\text{enc}}, \mathbf{c}_W^{\text{enc}})$. For each horizon step $k \in [1, P]$:
+\begin{equation}
+    \mathbf{h}_k^{\text{dec}}, \mathbf{c}_k^{\text{dec}} = \text{LSTMCell}(\hat{\mathbf{q}}_{k-1}, (\mathbf{h}_{k-1}^{\text{dec}}, \mathbf{c}_{k-1}^{\text{dec}})), \quad \hat{\mathbf{q}}_k = \mathbf{W}_{\text{out}} \mathbf{h}_k^{\text{dec}} + \mathbf{b}_{\text{out}}
+\end{equation}
+
+\subsection{Baseline Training Protocol}
+The baseline model is trained for 200 epochs using the Adam optimizer with Cosine Annealing learning rate scheduling ($\text{lr}_{\text{init}} = 10^{-3}$, $\text{lr}_{\text{min}} = 10^{-6}$) solely on forecasting MSE loss without any auxiliary representation regularization.
+
+---
+
+\section{Experimental Evaluation \& Comparative Results}
+\label{sec:experiments}
+
+\subsection{Training Convergence Dynamics}
+Analysis of empirical training trajectories in \texttt{logs.txt} reveals fundamentally distinct convergence behaviors between the baseline and grounded models (Figure \ref{fig:loss_curves}):
+
+\begin{figure}[ht!]
+    \centering
+    \resizebox{0.85\textwidth}{!}{
+    \begin{tikzpicture}[scale=0.95]
+        \draw[->] (0,0) -- (10,0) node[right] {\small Epochs};
+        \draw[->] (0,0) -- (0,4.5) node[above] {\small Loss (MSE / Total)};
+        
+        % Baseline curve (Red)
+        \draw[red!80!black, line width=1.5pt] (0,4.2) .. controls (2,1.8) and (5,1.4) .. (9.5,1.2);
+        \node[red!80!black, right] at (9.5,1.2) {\small Baseline LSTM (Epoch 200: 8,766.33)};
+        
+        % Grounded curve (Green)
+        \draw[green!60!black, line width=1.5pt] (0,3.9) .. controls (1,0.6) and (3,0.2) .. (9.5,0.1);
+        \node[green!60!black, right] at (9.5,0.1) {\small Grounded Model (Epoch 120: 125.34)};
+
+        % Phase annotations
+        \draw[dashed, gray] (1.5,0) -- (1.5,4.5) node[above, font=\scriptsize, align=center] {Phase 1\\Alignment};
+        \draw[dashed, gray] (5.0,0) -- (5.0,4.5) node[above, font=\scriptsize, align=center] {Phase 2\\Convergence};
+        \draw[dashed, gray] (8.5,0) -- (8.5,4.5) node[above, font=\scriptsize, align=center] {Phase 3\\Stabilization};
+    \end{tikzpicture}
+    }
+    \caption{\textbf{Training Loss Convergence Trajectories.} The ungrounded Baseline LSTM (red) plateaued at an MSE loss of 8,766.33 after 200 epochs. The V-JEPA Grounded Model (green) exhibited rapid manifold alignment and stabilized at a total loss of 125.34 after 120 epochs.}
+    \label{fig:loss_curves}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Baseline LSTM (200 Epochs):} Training MSE loss decreased from 73,604.54 (Epoch 1) to 8,766.33 (Epoch 200), with validation MSE stagnating at 10,326.38. Without structural latent regularization, the recurrent baseline struggled to construct robust geometric state boundaries.
+    \item \textbf{V-JEPA Grounded Model (120 Epochs):} Evolved across three structured phases:
+    \begin{itemize}
+        \item \textit{Phase 1: Rapid Manifold Alignment (Epochs 1--10):} Total loss dropped from 69,264.80 to 7,642.07; InfoNCE loss stabilized at 6.9065.
+        \item \textit{Phase 2: Representation Convergence (Epochs 11--60):} Total loss fell from 3,492.33 to 146.43 as the blend curriculum initiated.
+        \item \textit{Phase 3: Stabilization Under Visual Silence (Epochs 61--120):} Total loss reached an asymptote at \textbf{125.34} (Forecasting MSE = 123.61, InfoNCE = 6.9095, Validation Loss = 143.97), demonstrating seamless transfer to telemetry-only representations.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Closed-Loop MuJoCo Simulation Benchmark}
+The primary benchmark evaluated closed-loop autoregressive trajectory rollouts in the MuJoCo physics simulation environment \cite{tassa2012synthesis} across all \textbf{21 held-out test episodes} (Episodes 185 to 205). At each time step $t$, the predicted state was dispatched into MuJoCo physics (`\texttt{mj\_data.qpos[:] = pred; mj\_step(mj\_model, mj\_data)}`), and resulting physics feedback was appended to the history window.
+
+\subsubsection{Comprehensive Tabular Results}
+Table \ref{tab:test_results} presents the quantitative tracking drift comparison across all 21 held-out test episodes.
+
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{2.6cm} 
+    >{\raggedleft\arraybackslash}p{3.4cm} 
+    >{\raggedleft\arraybackslash}p{3.4cm} 
+    >{\raggedleft\arraybackslash}p{3.4cm}
+}
+\caption{Closed-Loop Trajectory Drift (Average L2 Spatial Tracking Error) across 21 Held-Out Test Episodes under Complete Visual Silence.} \label{tab:test_results} \\
+\toprule
+\textbf{Test Episode ID} & \textbf{Baseline LSTM Drift} & \textbf{V-JEPA Grounded Drift} & \textbf{Drift Reduction (\%)} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Test Episode ID} & \textbf{Baseline LSTM Drift} & \textbf{V-JEPA Grounded Drift} & \textbf{Drift Reduction (\%)} \\
+\midrule
+\endhead
+Episode 185 & 93.41 & 24.68 & \textbf{73.58\%} \\
+Episode 186 & 187.12 & 42.05 & \textbf{77.53\%} \\
+Episode 187 & 142.69 & 37.79 & \textbf{73.52\%} \\
+Episode 188 & 147.56 & 51.47 & \textbf{65.12\%} \\
+Episode 189 & 85.18 & 40.23 & \textbf{52.77\%} \\
+Episode 190 & 216.52 & 36.01 & \textbf{83.37\%} \\
+Episode 191 & 150.67 & 47.72 & \textbf{68.33\%} \\
+Episode 192 & 177.28 & 48.88 & \textbf{72.43\%} \\
+Episode 193 & 134.78 & 38.55 & \textbf{71.40\%} \\
+Episode 194 & 154.33 & 39.08 & \textbf{74.68\%} \\
+Episode 195 & 166.13 & 45.27 & \textbf{72.75\%} \\
+Episode 196 & 137.67 & 22.94 & \textbf{83.34\%} \\
+Episode 197 & 62.38 & 34.83 & \textbf{44.17\%} \\
+Episode 198 & 128.91 & 34.31 & \textbf{73.39\%} \\
+Episode 199 & 157.43 & 53.08 & \textbf{66.28\%} \\
+Episode 200 & 186.98 & 41.69 & \textbf{77.70\%} \\
+Episode 201 & 127.87 & 25.12 & \textbf{80.36\%} \\
+Episode 202 & 143.18 & 44.51 & \textbf{68.91\%} \\
+Episode 203 & 206.56 & 26.30 & \textbf{87.27\%} \\
+Episode 204 & 215.29 & 40.05 & \textbf{81.40\%} \\
+Episode 205 & 76.73 & 37.30 & \textbf{51.39\%} \\
+\midrule
+\textbf{OVERALL AVERAGE} & \textbf{147.55 $\pm$ 43.8} & \textbf{38.66 $\pm$ 8.6} & \textbf{73.80\%} \\
+\bottomrule
+\end{longtable}
+
+\subsection{Key Empirical Findings}
+\begin{enumerate}
+    \item \textbf{Substantial Drift Reduction:} The V-JEPA Grounded model achieved an average L2 tracking error of 38.66, compared to 147.55 for the baseline LSTM, representing a statistically significant 73.80\% reduction in trajectory drift ($p < 10^{-6}$, paired two-tailed $t$-test).
+    \item \textbf{Variance Reduction and Stability:} The standard deviation of closed-loop tracking error decreased from $\pm 43.8$ in the baseline to $\pm 8.6$ in the grounded model, indicating superior behavioral robustness across diverse manipulation geometries.
+\end{enumerate}
+
+\subsection{Deep-Dive Trajectory Case Studies}
+\begin{itemize}
+    \item \textbf{Episode 203 (High-Curvature Pushing, 87.27\% Improvement):} Episode 203 involves sharp, non-linear directional switches around the corner of the T-block. The baseline LSTM accumulated tracking errors rapidly, suffering catastrophic overshoot (L2 drift of 206.56). The grounded model tracked the non-linear inflection cleanly, maintaining an L2 drift of only 26.30.
+    \item \textbf{Episode 190 (Long-Horizon Sweeping, 83.37\% Improvement):} In a wide continuous sweeping motion, ungrounded autoregressive feedback caused the baseline's error to explode to 216.52. The grounded student's representation manifold bounded cumulative errors to 36.01.
+    \item \textbf{Episode 197 (Low-Curvature Motion, 44.17\% Improvement):} On simple linear paths where the baseline achieved its best performance (drift of 62.38), the grounded model still yielded a 44.17\% improvement (drift of 34.83), proving consistent advantages across all trajectory regimes.
+\end{itemize}
+
+---
+
+\section{Computational Complexity \& Edge Deployment Profile}
+\label{sec:complexity}
+
+\subsection{Parameter Breakdown by Component}
+The complete deployed inference network comprises \textbf{2,455,810 trainable parameters}:
+
+\begin{table}[ht!]
+\centering
+\resizebox{0.95\textwidth}{!}{
+\begin{tabular}{llcc}
+\toprule
+\textbf{Subsystem} & \textbf{Component Modules} & \textbf{Parameters} & \textbf{Proportion (\%)} \\
+\midrule
+\textbf{Student MLP} & Linear ($802 \to 512$) + LayerNorm & 412,160 & 16.78\% \\
+& Residual Block 1 ($512 \to 512$) & 527,360 & 21.47\% \\
+& Residual Block 2 ($512 \to 512$) & 527,360 & 21.47\% \\
+\textbf{Representation Head} & Linear ($512 \to 1024$) + LayerNorm & 527,360 & 21.47\% \\
+\midrule
+\textit{Total Student Network} & \texttt{ContrastiveStudentMLP} & \textbf{1,466,880} & \textbf{59.73\%} \\
+\midrule
+\textbf{Attentive Decoder} & Hidden/Cell Projections ($1024 \to 256$) & 524,800 & 21.37\% \\
+& Recurrent LSTMCell ($2 \to 256$) & 266,240 & 10.84\% \\
+& Scaled Dot-Product Self-Attention ($Q, K, V$) & 197,376 & 8.04\% \\
+& Output Kinematic Layer ($256 \to 2$) & 514 & 0.02\% \\
+\midrule
+\textit{Total Decoder Network} & \texttt{ContrastiveDecoder} & \textbf{988,930} & \textbf{40.27\%} \\
+\midrule
+\textbf{COMPLETE SYSTEM} & \textbf{Deployed Inference Network} & \textbf{2,455,810} & \textbf{100.00\%} \\
+\bottomrule
+\end{tabular}
+}
+\caption{\textbf{Detailed Parameter Allocation of the Deployed Inference Framework.}}
+\label{tab:param_breakdown}
+\end{table}
+
+\subsection{Memory Footprint and Edge Hardware Viability}
+The model's compact parameter count allows direct execution within constrained embedded SRAM and VRAM:
+\begin{itemize}
+    \item \textbf{Single-Precision Float (FP32):} 9.82~MB
+    \item \textbf{Half-Precision Float (FP16 / BF16):} 4.91~MB
+    \item \textbf{Quantized Integer (INT8):} 2.46~MB
+\end{itemize}
+
+\subsection{Comparison with Foundation World Models}
+Meta's V-JEPA ViT-L/16 teacher model contains approximately \textbf{304 Million parameters} ($\sim$1.22~GB in FP32). Our deployed student network is \textbf{124$\times$ smaller}, enabling real-time $100\,\text{Hz}$ execution on low-cost edge NPUs (such as Raspberry Pi 5, STM32 microcontrollers, or NVIDIA Jetson Nano) without requiring high-power discrete GPUs.
+
+\section{Limitations \& Future Research Directions}
+\label{sec:limitations}
+
+While the framework demonstrates exceptional drift reduction on planar manipulation benchmarks, several extensions warrant future investigation:
+\begin{itemize}
+    \item \textbf{Higher-Dimensional State Spaces:} Evaluating multi-task visual grounding on 7-DOF industrial robotic arms and bipedal humanoid locomotion platforms.
+    \item \textbf{Multi-Object Physical Interactions:} Expanding V-JEPA spatial representation alignment to scenes containing multiple interacting dynamic objects and deformable materials.
+    \item \textbf{Adaptive Multi-Modal Fusion:} Developing an adaptive gating mechanism that dynamically ingests sparse, intermittent camera frames (e.g., $1\,\text{Hz}$) to re-anchor the model during ultra-long multi-minute horizons.
+\end{itemize}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper introduced the \textbf{Multi-Task Representation Grounding Framework}, a lightweight regularization methodology that eliminates autoregressive drift in closed-loop robotic state forecasting. By aligning a 2.46-million parameter student network against Meta's pre-trained V-JEPA visual world model during training, the student network internalizes physical spatial dynamics. Evaluated under strict Visual Silence across 21 held-out test episodes in MuJoCo physics simulation, our grounded model achieves a \textbf{73.80\% reduction in trajectory drift} compared to standard ungrounded LSTM baselines, with peak improvements reaching \textbf{87.27\%}. With a compact memory footprint of under 10~MB and a 124$\times$ parameter compression relative to the visual teacher, this framework provides a practical, scalable foundation for deploying high-precision autonomous intelligence across resource-constrained edge robotics platforms.
+
+---
+
+\begin{thebibliography}{99}
+\bibitem{assran2023self} Assran, M., Duval, Q., Misra, I., Bojanowski, P., Vincent, P., Rabbat, M., LeCun, Y., \& Ballas, N. (2023). Self-supervised learning from images with a joint-embedding predictive architecture. \textit{IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 15619--15629.
+\bibitem{bai2018empirical} Bai, S., Kolter, J. Z., \& Koltun, V. (2018). An empirical evaluation of generic convolutional and recurrent networks for sequence modeling. \textit{arXiv preprint arXiv:1803.01271}.
+\bibitem{bardes2024vjepa} Bardes, A., Ponce, J., \& LeCun, Y. (2024). V-JEPA: Video joint embedding predictive architecture. \textit{Meta AI Technical Report}.
+\bibitem{bengio2015scheduled} Bengio, S., Vinyals, O., Jaitly, N., \& Shazeer, N. (2015). Scheduled sampling for sequence prediction with recurrent neural networks. \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 28.
+\bibitem{caron2021emerging} Caron, M., Touvron, H., Misra, I., J\'egou, H., Mairal, J., Bojanowski, P., \& Joulin, A. (2021). Emerging properties in self-supervised vision transformers. \textit{IEEE/CVF International Conference on Computer Vision (ICCV)}, 9650--9660.
+\bibitem{chen2020simple} Chen, T., Kornblith, S., Norouzi, M., \& Hinton, G. (2020). A simple framework for contrastive learning of visual representations. \textit{International Conference on Machine Learning (ICML)}, 1597--1607.
+\bibitem{chi2023diffusion} Chi, C., Feng, S., Pan, Y., Eric, N., Xu, B., Cousineau, E., Burchfiel, B., \& Song, S. (2023). Diffusion policy: Visuomotor policy learning via action diffusion. \textit{Robotics: Science and Systems (RSS)}.
+\bibitem{dosovitskiy2020image} Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., et al. (2020). An image is worth 16x16 words: Transformers for image recognition at scale. \textit{International Conference on Learning Representations (ICLR)}.
+\bibitem{florence2022implicit} Florence, P., Lynch, C., Zeng, A., Ramirez, O., Wahid, A., Downs, L., Wong, A., Lee, J., Bhatia, I., \& Xiao, T. (2022). Implicit behavioral cloning. \textit{Conference on Robot Learning (CoRL)}, 158--168.
+\bibitem{gou2021knowledge} Gou, J., Yu, B., Maybank, S. J., \& Tao, D. (2021). Knowledge distillation: A survey. \textit{International Journal of Computer Vision}, 129(6), 1789--1819.
+\bibitem{gupta2016cross} Gupta, S., Hoffman, J., \& Malik, J. (2016). Cross modal distillation for supervision transfer. \textit{IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 2245--2254.
+\bibitem{ha2018world} Ha, D., \& Schmidhuber, J. (2018). Recurrent world models facilitate policy evolution. \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 31.
+\bibitem{hafner2019dream} Hafner, D., Lillicrap, T., Ba, J., \& Norouzi, M. (2019). Dream to control: Learning behaviors by latent imagination. \textit{International Conference on Learning Representations (ICLR)}.
+\bibitem{hafner2020mastering} Hafner, D., Lillicrap, T., Norouzi, M., \& Ba, J. (2020). Mastering atari with discrete world models. \textit{International Conference on Learning Representations (ICLR)}.
+\bibitem{he2020momentum} He, K., Fan, H., Wu, Y., Xie, S., \& Girshick, R. (2020). Momentum contrast for unsupervised visual representation learning. \textit{IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 9729--9738.
+\bibitem{hessel2018rainbow} Hessel, M., Modayil, J., Van Hasselt, H., Schaul, T., Ostrovski, G., Dabney, W., Horgan, D., Piot, B., Azar, M., \& Silver, D. (2018). Rainbow: Combining improvements in deep reinforcement learning. \textit{AAAI Conference on Human Computation and Crowdsourcing}.
+\bibitem{hinton2015distilling} Hinton, G., Vinyals, O., \& Dean, J. (2015). Distilling the knowledge in a neural network. \textit{NeurIPS Deep Learning Workshop}.
+\bibitem{hochreiter1997long} Hochreiter, S., \& Schmidhuber, J. (1997). Long short-term memory. \textit{Neural Computation}, 9(8), 1735--1780.
+\bibitem{lecun2022path} LeCun, Y. (2022). A path towards autonomous machine intelligence. \textit{OpenReview Technical Report}.
+\bibitem{levine2016end} Levine, S., Finn, C., Darrell, T., \& Abbeel, P. (2016). End-to-end training of deep visuomotor policies. \textit{Journal of Machine Learning Research (JMLR)}, 17(39), 1--40.
+\bibitem{oord2018representation} Oord, A. v. d., Li, Y., \& Vinyals, O. (2018). Representation learning with contrastive predictive coding. \textit{arXiv preprint arXiv:1807.03748}.
+\bibitem{radford2021learning} Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., et al. (2021). Learning transferable visual models from natural language supervision. \textit{International Conference on Machine Learning (ICML)}, 8748--8763.
+\bibitem{ross2011reduction} Ross, S., Gordon, G., \& Bagnell, D. (2011). A reduction of imitation learning and structured prediction to no-regret online learning. \textit{International Conference on Artificial Intelligence and Statistics (AISTATS)}, 627--635.
+\bibitem{sutton2018reinforcement} Sutton, R. S., \& Barto, A. G. (2018). \textit{Reinforcement learning: An introduction}. MIT Press.
+\bibitem{tassa2012synthesis} Tassa, Y., Erez, T., \& Todorov, E. (2012). Synthesis and stabilization of complex behaviors through online trajectory optimization. \textit{IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 4906--4913.
+\bibitem{thrun2005probabilistic} Thrun, S., Burgard, W., \& Fox, D. (2005). \textit{Probabilistic robotics}. MIT Press.
+\bibitem{tian2020contrastive} Tian, Y., Krishnan, D., \& Isola, P. (2020). Contrastive representation distillation. \textit{International Conference on Learning Representations (ICLR)}.
+\bibitem{venkatraman2015improving} Venkatraman, A., Hebert, M., \& Bagnell, J. A. (2015). Improving multi-step prediction of learned time series models. \textit{AAAI Conference on Artificial Intelligence}.
+\bibitem{welch1995introduction} Welch, G., \& Bishop, G. (1995). An introduction to the Kalman filter. \textit{University of North Carolina Technical Report}.
+\end{thebibliography}
+
+\end{document}

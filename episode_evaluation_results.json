@@ -1,0 +1,149 @@
+{
+    "185": {
+        "baseline_drift": 93.40570068359375,
+        "contrastive_drift": 24.676443099975586,
+        "improvement_percent": 73.58143783582807,
+        "plot_path": "trajectory_comparison_ep_185.png",
+        "gif_path": "trajectory_animation_ep_185.gif"
+    },
+    "186": {
+        "baseline_drift": 187.11605834960938,
+        "contrastive_drift": 42.047813415527344,
+        "improvement_percent": 77.52848484176337,
+        "plot_path": "trajectory_comparison_ep_186.png",
+        "gif_path": "trajectory_animation_ep_186.gif"
+    },
+    "187": {
+        "baseline_drift": 142.69093322753906,
+        "contrastive_drift": 37.788734436035156,
+        "improvement_percent": 73.51707387337908,
+        "plot_path": "trajectory_comparison_ep_187.png",
+        "gif_path": "trajectory_animation_ep_187.gif"
+    },
+    "188": {
+        "baseline_drift": 147.55726623535156,
+        "contrastive_drift": 51.465782165527344,
+        "improvement_percent": 65.12148572647028,
+        "plot_path": "trajectory_comparison_ep_188.png",
+        "gif_path": "trajectory_animation_ep_188.gif"
+    },
+    "189": {
+        "baseline_drift": 85.17536926269531,
+        "contrastive_drift": 40.231414794921875,
+        "improvement_percent": 52.76637466537849,
+        "plot_path": "trajectory_comparison_ep_189.png",
+        "gif_path": "trajectory_animation_ep_189.gif"
+    },
+    "190": {
+        "baseline_drift": 216.52093505859375,
+        "contrastive_drift": 36.00564956665039,
+        "improvement_percent": 83.37082298443487,
+        "plot_path": "trajectory_comparison_ep_190.png",
+        "gif_path": "trajectory_animation_ep_190.gif"
+    },
+    "191": {
+        "baseline_drift": 150.66510009765625,
+        "contrastive_drift": 47.7152214050293,
+        "improvement_percent": 68.3302759735985,
+        "plot_path": "trajectory_comparison_ep_191.png",
+        "gif_path": "trajectory_animation_ep_191.gif"
+    },
+    "192": {
+        "baseline_drift": 177.28292846679688,
+        "contrastive_drift": 48.884376525878906,
+        "improvement_percent": 72.42578462086134,
+        "plot_path": "trajectory_comparison_ep_192.png",
+        "gif_path": "trajectory_animation_ep_192.gif"
+    },
+    "193": {
+        "baseline_drift": 134.77532958984375,
+        "contrastive_drift": 38.549400329589844,
+        "improvement_percent": 71.39728728773608,
+        "plot_path": "trajectory_comparison_ep_193.png",
+        "gif_path": "trajectory_animation_ep_193.gif"
+    },
+    "194": {
+        "baseline_drift": 154.3331756591797,
+        "contrastive_drift": 39.0800895690918,
+        "improvement_percent": 74.67810183897598,
+        "plot_path": "trajectory_comparison_ep_194.png",
+        "gif_path": "trajectory_animation_ep_194.gif"
+    },
+    "195": {
+        "baseline_drift": 166.1265106201172,
+        "contrastive_drift": 45.273311614990234,
+        "improvement_percent": 72.74769003093246,
+        "plot_path": "trajectory_comparison_ep_195.png",
+        "gif_path": "trajectory_animation_ep_195.gif"
+    },
+    "196": {
+        "baseline_drift": 137.6693572998047,
+        "contrastive_drift": 22.937088012695312,
+        "improvement_percent": 83.33900262006391,
+        "plot_path": "trajectory_comparison_ep_196.png",
+        "gif_path": "trajectory_animation_ep_196.gif"
+    },
+    "197": {
+        "baseline_drift": 62.378231048583984,
+        "contrastive_drift": 34.82672882080078,
+        "improvement_percent": 44.168457111783766,
+        "plot_path": "trajectory_comparison_ep_197.png",
+        "gif_path": "trajectory_animation_ep_197.gif"
+    },
+    "198": {
+        "baseline_drift": 128.90786743164062,
+        "contrastive_drift": 34.30831527709961,
+        "improvement_percent": 73.38539845499098,
+        "plot_path": "trajectory_comparison_ep_198.png",
+        "gif_path": "trajectory_animation_ep_198.gif"
+    },
+    "199": {
+        "baseline_drift": 157.42893981933594,
+        "contrastive_drift": 53.0826530456543,
+        "improvement_percent": 66.28151526233266,
+        "plot_path": "trajectory_comparison_ep_199.png",
+        "gif_path": "trajectory_animation_ep_199.gif"
+    },
+    "200": {
+        "baseline_drift": 186.97817993164062,
+        "contrastive_drift": 41.692928314208984,
+        "improvement_percent": 77.70171453725138,
+        "plot_path": "trajectory_comparison_ep_200.png",
+        "gif_path": "trajectory_animation_ep_200.gif"
+    },
+    "201": {
+        "baseline_drift": 127.86833953857422,
+        "contrastive_drift": 25.117385864257812,
+        "improvement_percent": 80.35683738844469,
+        "plot_path": "trajectory_comparison_ep_201.png",
+        "gif_path": "trajectory_animation_ep_201.gif"
+    },
+    "202": {
+        "baseline_drift": 143.18011474609375,
+        "contrastive_drift": 44.5139274597168,
+        "improvement_percent": 68.9105379342272,
+        "plot_path": "trajectory_comparison_ep_202.png",
+        "gif_path": "trajectory_animation_ep_202.gif"
+    },
+    "203": {
+        "baseline_drift": 206.56234741210938,
+        "contrastive_drift": 26.303936004638672,
+        "improvement_percent": 87.26586121130775,
+        "plot_path": "trajectory_comparison_ep_203.png",
+        "gif_path": "trajectory_animation_ep_203.gif"
+    },
+    "204": {
+        "baseline_drift": 215.29176330566406,
+        "contrastive_drift": 40.05177688598633,
+        "improvement_percent": 81.39651221625132,
+        "plot_path": "trajectory_comparison_ep_204.png",
+        "gif_path": "trajectory_animation_ep_204.gif"
+    },
+    "205": {
+        "baseline_drift": 76.73252868652344,
+        "contrastive_drift": 37.30122375488281,
+        "improvement_percent": 51.38799099496634,
+        "plot_path": "trajectory_comparison_ep_205.png",
+        "gif_path": "trajectory_animation_ep_205.gif"
+    }
+}
